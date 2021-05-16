@@ -16,7 +16,7 @@ namespace Movie_Collection.View
     /// <summary>
     /// Логика взаимодействия для AllDirectorsView.xaml
     /// </summary>
-    public partial class AllDirectorsView : Page
+    public partial class AllDirectorsView : UserControl
     {
         public AllDirectorsView()
         {

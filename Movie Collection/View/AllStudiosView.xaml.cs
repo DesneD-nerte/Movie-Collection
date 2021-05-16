@@ -16,7 +16,7 @@ namespace Movie_Collection.View
     /// <summary>
     /// Логика взаимодействия для AllStudiosView.xaml
     /// </summary>
-    public partial class AllStudiosView : Page
+    public partial class AllStudiosView : UserControl
     {
         public AllStudiosView()
         {

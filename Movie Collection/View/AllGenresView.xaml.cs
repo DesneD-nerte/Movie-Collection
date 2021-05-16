@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace Movie_Collection.View
 {
     /// <summary>
-    /// Логика взаимодействия для AllElementsView.xaml
+    /// Логика взаимодействия для AllGenresView.xaml
     /// </summary>
-    public partial class AllElementsView : Page
+    public partial class AllGenresView : UserControl
     {
-        public AllElementsView()
+        public AllGenresView()
         {
             InitializeComponent();
         }

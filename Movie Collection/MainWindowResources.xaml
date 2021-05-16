@@ -9,8 +9,25 @@
   of the AllCustomersViewModel class shown in the main window.
   -->
     <DataTemplate DataType="{x:Type vm:AllMoviesViewModel}">
-     <vw:AllMoviesView />
-  </DataTemplate>
+        <vw:AllMoviesView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:AllActorsViewModel}">
+        <vw:AllActorsView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:AllDirectorsViewModel}">
+        <vw:AllDirectorsView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:AllStudiosViewModel}">
+        <vw:AllStudiosView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:AllGenresViewModel}">
+        <vw:AllGenresView />
+    </DataTemplate>
+    
 
     <!--Шаблон для отображения левой части экрана-->
     <DataTemplate x:Key="CommandsTemplate">
@@ -27,7 +44,39 @@
         </ItemsControl>
     </DataTemplate>
 
-  <Style x:Key="MainHCCStyle" TargetType="{x:Type HeaderedContentControl}">
+    <DataTemplate x:Key="ClosableTabItemTemplate">
+        <DockPanel Width="150">
+            <Button
+                Command="{Binding Path=CloseCommand}"
+                Content="X"
+                DockPanel.Dock="Right"
+                Focusable="False"
+                FontFamily="Roboto"
+                FontSize="10"
+                FontWeight="Medium"
+                VerticalContentAlignment="Top"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"
+                Width="16"
+                Height="16">
+            </Button>
+            <ContentPresenter 
+                Content="{Binding Path=DisplayName}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left">
+            </ContentPresenter>
+        </DockPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="WorkspacesTemplate">
+        <TabControl 
+            IsSynchronizedWithCurrentItem="True"
+            ItemsSource="{Binding}"
+            ItemTemplate="{StaticResource ClosableTabItemTemplate}">
+        </TabControl>
+    </DataTemplate>
+
+    <Style x:Key="MainHCCStyle" TargetType="{x:Type HeaderedContentControl}">
     <Setter Property="IsTabStop" Value="False" />
     <Setter Property="HeaderTemplate">
       <Setter.Value>
