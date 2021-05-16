@@ -117,8 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddActorViewModel_DisplayName" xml:space="preserve">
+    <value>Добавить актера</value>
+    <comment>Отображение во вкладках (справа)</comment>
+  </data>
+  <data name="AddDirectorViewModel_DisplayName" xml:space="preserve">
+    <value>Добавить режиссера</value>
+  </data>
+  <data name="AddMovieViewModel_DisplayName" xml:space="preserve">
+    <value>Добавить фильм</value>
+  </data>
+  <data name="AddStudioViewModel_DisplayName" xml:space="preserve">
+    <value>Добавить студию</value>
+  </data>
+  <data name="AllActorsViewModel_DisplayName" xml:space="preserve">
+    <value>Актеры</value>
+  </data>
+  <data name="AllDirectorsViewModel_DisplayName" xml:space="preserve">
+    <value>Режиссеры</value>
+  </data>
+  <data name="AllGenresViewModel_DisplayName" xml:space="preserve">
+    <value>Жанры</value>
+  </data>
+  <data name="AllMoviesViewModel_DisplayName" xml:space="preserve">
+    <value>Фильмы</value>
+  </data>
+  <data name="AllStudiosViewModel_DisplayName" xml:space="preserve">
+    <value>Студии</value>
+  </data>
+  <data name="MainWindowViewModel_Command_AddActor" xml:space="preserve">
+    <value>Добавить актера</value>
+  </data>
+  <data name="MainWindowViewModel_Command_AddDirector" xml:space="preserve">
+    <value>Добавить режиссера</value>
+  </data>
+  <data name="MainWindowViewModel_Command_AddMovie" xml:space="preserve">
+    <value>Добавить фильм</value>
+  </data>
+  <data name="MainWindowViewModel_Command_AddStudio" xml:space="preserve">
+    <value>Добавить студию</value>
+  </data>
   <data name="MainWindowViewModel_Command_ViewAllActors" xml:space="preserve">
     <value>Все актеры</value>
+    <comment>Отображение комманд (слева)</comment>
   </data>
   <data name="MainWindowViewModel_Command_ViewAllDirectors" xml:space="preserve">
     <value>Все режиссеры</value>

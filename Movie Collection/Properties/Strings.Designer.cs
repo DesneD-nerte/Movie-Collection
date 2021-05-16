@@ -61,6 +61,123 @@ namespace Movie_Collection.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Добавить актера.
+        /// </summary>
+        internal static string AddActorViewModel_DisplayName {
+            get {
+                return ResourceManager.GetString("AddActorViewModel_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Добавить режиссера.
+        /// </summary>
+        internal static string AddDirectorViewModel_DisplayName {
+            get {
+                return ResourceManager.GetString("AddDirectorViewModel_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Добавить фильм.
+        /// </summary>
+        internal static string AddMovieViewModel_DisplayName {
+            get {
+                return ResourceManager.GetString("AddMovieViewModel_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Добавить студию.
+        /// </summary>
+        internal static string AddStudioViewModel_DisplayName {
+            get {
+                return ResourceManager.GetString("AddStudioViewModel_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Актеры.
+        /// </summary>
+        internal static string AllActorsViewModel_DisplayName {
+            get {
+                return ResourceManager.GetString("AllActorsViewModel_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Режиссеры.
+        /// </summary>
+        internal static string AllDirectorsViewModel_DisplayName {
+            get {
+                return ResourceManager.GetString("AllDirectorsViewModel_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Жанры.
+        /// </summary>
+        internal static string AllGenresViewModel_DisplayName {
+            get {
+                return ResourceManager.GetString("AllGenresViewModel_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Фильмы.
+        /// </summary>
+        internal static string AllMoviesViewModel_DisplayName {
+            get {
+                return ResourceManager.GetString("AllMoviesViewModel_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Студии.
+        /// </summary>
+        internal static string AllStudiosViewModel_DisplayName {
+            get {
+                return ResourceManager.GetString("AllStudiosViewModel_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Добавить актера.
+        /// </summary>
+        internal static string MainWindowViewModel_Command_AddActor {
+            get {
+                return ResourceManager.GetString("MainWindowViewModel_Command_AddActor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Добавить режиссера.
+        /// </summary>
+        internal static string MainWindowViewModel_Command_AddDirector {
+            get {
+                return ResourceManager.GetString("MainWindowViewModel_Command_AddDirector", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Добавить фильм.
+        /// </summary>
+        internal static string MainWindowViewModel_Command_AddMovie {
+            get {
+                return ResourceManager.GetString("MainWindowViewModel_Command_AddMovie", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Добавить студию.
+        /// </summary>
+        internal static string MainWindowViewModel_Command_AddStudio {
+            get {
+                return ResourceManager.GetString("MainWindowViewModel_Command_AddStudio", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Все актеры.
         /// </summary>
         internal static string MainWindowViewModel_Command_ViewAllActors {

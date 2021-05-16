@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,51 +16,42 @@ namespace Movie_Collection
     /// </summary>
     public partial class App : Application
     {
-        //static App()
-        //{
-        //    // This code is used to test the app when using other cultures.
-        //    //
-        //    //System.Threading.Thread.CurrentThread.CurrentCulture =
-        //    //    System.Threading.Thread.CurrentThread.CurrentUICulture =
-        //    //        new System.Globalization.CultureInfo("it-IT");
+        static App()
+        {
+            FrameworkElement.LanguageProperty.OverrideMetadata(
+              typeof(FrameworkElement),
+              new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
+        }
 
+        //Строка подключения к SQL Server
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
 
-        //    // Ensure the current culture passed into bindings is the OS culture.
-        //    // By default, WPF uses en-US as the culture, regardless of the system settings.
-        //    //
-        //    FrameworkElement.LanguageProperty.OverrideMetadata(
-        //      typeof(FrameworkElement),
-        //      new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
-        //}
+            MainWindow window = new MainWindow();
 
-        //protected override void OnStartup(StartupEventArgs e)
-        //{
-        //    base.OnStartup(e);
+            // Create the ViewModel to which 
+            // the main window binds.
+            string path = @"Data Source=DESKTOP-BPJV9MD\SQLEXPRESS;Initial Catalog=RGR;Integrated Security=True";
+            var viewModel = new MainWindowViewModel(path);
 
-        //    MainWindow window = new MainWindow();
+            // When the ViewModel asks to be closed, 
+            // close the window.
+            EventHandler handler = null;
+            handler = delegate
+            {
+                viewModel.RequestClose -= handler;
+                window.Close();
+            };
+            viewModel.RequestClose += handler;
 
-        //    // Create the ViewModel to which 
-        //    // the main window binds.
-        //    string path = "Data/customers.xml";
-        //    var viewModel = new MainWindowViewModel(path);
+            // Allow all controls in the window to 
+            // bind to the ViewModel by setting the 
+            // DataContext, which propagates down 
+            // the element tree.
+            window.DataContext = viewModel;
 
-        //    // When the ViewModel asks to be closed, 
-        //    // close the window.
-        //    EventHandler handler = null;
-        //    handler = delegate
-        //    {
-        //        viewModel.RequestClose -= handler;
-        //        window.Close();
-        //    };
-        //    viewModel.RequestClose += handler;
-
-        //    // Allow all controls in the window to 
-        //    // bind to the ViewModel by setting the 
-        //    // DataContext, which propagates down 
-        //    // the element tree.
-        //    window.DataContext = viewModel;
-
-        //    window.Show();
-        //}
+            window.Show();
+        }
     }
 }

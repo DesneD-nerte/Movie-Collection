@@ -1,4 +1,5 @@
-﻿using Movie_Collection.Properties;
+﻿using Movie_Collection.DataAccess;
+using Movie_Collection.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,8 +20,16 @@ namespace Movie_Collection.ViewModel
 
         ReadOnlyCollection<CommandViewModel> commands;
         ObservableCollection<WorkspaceViewModel> workspaces;
+        DataBaseWork dataBaseWork;
 
         #endregion
+
+        public MainWindowViewModel(string databaseConnectionString)
+        {
+            //base.DisplayName = Strings.MainWindowViewModel_DisplayName;
+
+            dataBaseWork = new DataBaseWork(databaseConnectionString);
+        }
 
         public ReadOnlyCollection<CommandViewModel> Commands
         {
@@ -28,7 +37,7 @@ namespace Movie_Collection.ViewModel
             {
                 if(commands == null)
                 {
-                    List<CommandViewModel> cmds = this.CreateCommands();
+                    List<CommandViewModel> cmds = this.CreateCommands();//Получаем команды при старте
                     commands = new ReadOnlyCollection<CommandViewModel>(cmds);
                 }
                 return commands;
@@ -60,8 +69,20 @@ namespace Movie_Collection.ViewModel
                     new RelayCommand(param => this.ShowAllGenres())),
 
                 new CommandViewModel(
-                    Strings.MainWindowViewModel_Command_ViewAllStorages,
-                    new RelayCommand(param => this.ShowAllStorages())),
+                    Strings.MainWindowViewModel_Command_AddMovie,
+                    new RelayCommand(param => this.ShowAddMovie())),
+
+                new CommandViewModel(
+                    Strings.MainWindowViewModel_Command_AddStudio,
+                    new RelayCommand(param => this.ShowAddStudio())),
+
+                new CommandViewModel(
+                    Strings.MainWindowViewModel_Command_AddActor,
+                    new RelayCommand(param => this.ShowAddActor())),
+
+                new CommandViewModel(
+                    Strings.MainWindowViewModel_Command_AddDirector,
+                    new RelayCommand(param => this.ShowAddDirector())),
             };
         }
 
@@ -84,7 +105,7 @@ namespace Movie_Collection.ViewModel
             {
                 foreach (WorkspaceViewModel oneWorkspace in e.NewItems)
                 {
-                    oneWorkspace.RequestClose += this.OnWorkspaceRequestClose;
+                    oneWorkspace.RequestClose += this.OnWorkspaceRequestClose;//По событию закрытия workspace добавляется метод
                 }
             }
             if(e.OldItems != null && e.OldItems.Count != 0)
@@ -105,7 +126,7 @@ namespace Movie_Collection.ViewModel
 
         #region Private Helpers
 
-        private void SetActiveWorkspace(AllMoviesViewModel workspace)
+        private void SetActiveWorkspace(WorkspaceViewModel workspace)
         {
             Debug.Assert(this.Workspaces.Contains(workspace));//Выведет на экран если уже есть
 
@@ -123,7 +144,7 @@ namespace Movie_Collection.ViewModel
                 as AllMoviesViewModel;//Для явного приведения
             if(oneworkspace == null)
             {
-                oneworkspace = new AllMoviesViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllMoviesViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -132,36 +153,96 @@ namespace Movie_Collection.ViewModel
 
         private void ShowAllStudios()
         {
-            throw new NotImplementedException();
+            AllStudiosViewModel oneworkspace =
+                this.Workspaces.FirstOrDefault(vm => vm is AllStudiosViewModel)//является данным типом
+                as AllStudiosViewModel;//Для явного приведения
+            if (oneworkspace == null)
+            {
+                oneworkspace = new AllStudiosViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+                this.Workspaces.Add(oneworkspace);
+            }
+
+            this.SetActiveWorkspace(oneworkspace);
         }
 
         private void ShowAllActors()
         {
-            throw new NotImplementedException();
+            AllActorsViewModel oneworkspace =
+                this.Workspaces.FirstOrDefault(vm => vm is AllActorsViewModel)//является данным типом
+                as AllActorsViewModel;//Для явного приведения
+            if (oneworkspace == null)
+            {
+                oneworkspace = new AllActorsViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+                this.Workspaces.Add(oneworkspace);
+            }
+
+            this.SetActiveWorkspace(oneworkspace);
         }
 
         private void ShowAllDirectors()
         {
-            throw new NotImplementedException();
+            AllDirectorsViewModel oneworkspace =
+                this.Workspaces.FirstOrDefault(vm => vm is AllDirectorsViewModel)//является данным типом
+                as AllDirectorsViewModel;//Для явного приведения
+            if (oneworkspace == null)
+            {
+                oneworkspace = new AllDirectorsViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+                this.Workspaces.Add(oneworkspace);
+            }
+
+            this.SetActiveWorkspace(oneworkspace);
         }
 
         private void ShowAllGenres()
         {
-            throw new NotImplementedException();
+            AllGenresViewModel oneworkspace =
+                this.Workspaces.FirstOrDefault(vm => vm is AllGenresViewModel)//является данным типом
+                as AllGenresViewModel;//Для явного приведения
+            if (oneworkspace == null)
+            {
+                oneworkspace = new AllGenresViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+                this.Workspaces.Add(oneworkspace);
+            }
+
+            this.SetActiveWorkspace(oneworkspace);
         }
 
-        private void ShowAllStorages()
+        private void ShowAddMovie()
         {
-            throw new NotImplementedException();
+            AddMovieViewModel oneworkspace = new AddMovieViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+
+            this.Workspaces.Add(oneworkspace);
+
+            this.SetActiveWorkspace(oneworkspace);
+        }
+
+        private void ShowAddStudio()
+        {
+            AddStudioViewModel oneworkspace = new AddStudioViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+
+            this.Workspaces.Add(oneworkspace);
+
+            this.SetActiveWorkspace(oneworkspace);
+        }
+
+        private void ShowAddActor()
+        {
+            AddActorViewModel oneworkspace = new AddActorViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+
+            this.Workspaces.Add(oneworkspace);
+
+            this.SetActiveWorkspace(oneworkspace);
+        }
+
+        private void ShowAddDirector()
+        {
+            AddDirectorViewModel oneworkspace = new AddDirectorViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+
+            this.Workspaces.Add(oneworkspace);
+
+            this.SetActiveWorkspace(oneworkspace);
         }
         #endregion
-
-        //public MainWindowViewModel(string customerDataFile)
-        //{
-        //base.DisplayName = Strings.MainWindowViewModel_DisplayName;
-
-        //_customerRepository = new CustomerRepository(customerDataFile);
-        //}
 
 
         //public string Title { get; set; } = "Коллекция фильмов";
