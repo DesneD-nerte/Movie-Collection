@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Movie_Collection"
         mc:Ignorable="d"
         Title="{ Binding Path = Title}"
-        Height="720" Width="1280">
+        Height="900" Width="1680">
 
     <!--<Window.DataContext>
         <vm:MainWindowViewModel/>
@@ -33,47 +33,43 @@
                 <ColumnDefinition Width="75*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="19*"/>
-                <RowDefinition  Height="2*"/>
-                <RowDefinition Height="125*"/>
+                <RowDefinition Height="115*"/>
+                <RowDefinition  Height="12*"/>
+                <RowDefinition Height="661*"/>
+                <RowDefinition Height="96*"/>
             </Grid.RowDefinitions>
 
-            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.Column="1" Background="Black" Margin="3,0,3,0" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="3" >
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.Column="1" Background="Black" Margin="3,0,3,0" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="4" >
             </Separator>
 
             <Image Source="/Images/MainIcon.png"
-                   VerticalAlignment="Center"
+                   VerticalAlignment="Top"
                    HorizontalAlignment="Center" Margin="0,10,0,0">
             </Image>
 
-            <Button Style="{DynamicResource MenuButton}" Grid.Column="3" Margin="3,18,9,18" Content="О программе"/>
-            <Button Style="{DynamicResource MenuButton}" Grid.Column="6" Margin="8,18,5,18" Content="Выход"/>
-            <Button Style="{DynamicResource MenuButton}" Grid.Column="4" Margin="6,18,8,18" Content="Контакты"/>
-            <Button Style="{DynamicResource MenuButton}" Grid.Column="5" Margin="7,18,8,18" Content="Справка"/>
+            <Button Command="{Binding Path=AboutProgramm}" Style="{DynamicResource MenuButton}" Grid.Column="3" Margin="3,18,9,18" Content="О программе"/>
+            <Button Command="{Binding Path=ContactsProgramm}" Style="{DynamicResource MenuButton}" Grid.Column="4" Margin="6,18,8,18" Content="Контакты"/>
+            <Button Command="{Binding Path=ReferenceProgramm}" Style="{DynamicResource MenuButton}" Grid.Column="5" Margin="7,18,8,18" Content="Справка"/>
+            <Button Command="{Binding Path=ExitProgramm}" Style="{DynamicResource MenuButton}" Grid.Column="6" Margin="8,18,5,18" Content="Выход"/>
 
             <Separator Grid.Row="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" VerticalAlignment="Center" Background="Black" Grid.ColumnSpan="8" Margin="0,0,4,0" Height="1" />
 
             <Border Grid.Row="2"
                     Background="#FF4E3B64"
-                    CornerRadius="10"
-                    VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch" Margin="15,10,10,15">
+                    CornerRadius="10" Margin="15,10,10,18">
                 <HeaderedContentControl
                     Header="Control Panel"
-                    Foreground="White"
                     FontFamily="Roboto"
-                    FontSize="14"
+                    FontSize="18"
                     FontWeight="Medium"
                     Style="{StaticResource MainHCCStyle}"
                     Content="{Binding Path=Commands}"
                     ContentTemplate="{StaticResource CommandsTemplate}"/>
             </Border>
-            
-            <Border Grid.Column="2" Grid.ColumnSpan="6" Grid.Row="3" 
+
+            <Border Grid.Column="2" Grid.ColumnSpan="6" Grid.Row="2" 
                     Background="#FF4E3B64"
-                    CornerRadius="10"
-                    VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch" Margin="10,10,10,15">
+                    CornerRadius="10" Margin="10,10,10,15" Grid.RowSpan="2">
                 <HeaderedContentControl 
                     Content="{Binding Path=Workspaces}"
                     ContentTemplate="{StaticResource WorkspacesTemplate}"

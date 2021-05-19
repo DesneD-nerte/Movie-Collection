@@ -10,71 +10,96 @@
             x:Key="MoviesGroup"
             Source="{Binding Path=Movies}">
         </CollectionViewSource>
-        
+
         <CollectionViewSource
             x:Key="ActorsGroup" 
             Source="{Binding Path=Actors}">
         </CollectionViewSource>
-        
+
         <CollectionViewSource
             x:Key="DirectorsGroup" 
             Source="{Binding Path=Directors}">
         </CollectionViewSource>
-        
+
         <CollectionViewSource
              x:Key="GenresGroup" 
              Source="{Binding Path=Genres}">
         </CollectionViewSource>
-        
+
         <CollectionViewSource
              x:Key="StudiosGroup" 
              Source="{Binding Path=Studios}">
         </CollectionViewSource>
+
+        <Style x:Key="MovieItemStyle" TargetType="{x:Type DataGridRow}">
+            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+            <Style.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsSelected" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="FontFamily" Value="Roboto" />
+                    <Setter Property="FontSize" Value="16" />
+                </MultiTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ItemStyle" TargetType="{x:Type DataGridCell}">
+            <Style.Triggers>
+                <Trigger Property="DataGridCell.IsSelected" Value="True">
+                    <Setter Property="Background" Value="#FF4760A0" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
     </UserControl.Resources>
     
-    <Grid>
+
+    <Grid Width="1097">
         <Grid.RowDefinitions>
-            <RowDefinition Height="69*"/>
-            <RowDefinition Height="74*"/>
-            <RowDefinition Height="33*"/>
-            <RowDefinition Height="87*"/>
-            <RowDefinition Height="55*"/>
-            <RowDefinition Height="85*"/>
-            <RowDefinition Height="55*"/>
-            <RowDefinition Height="192*"/>
-            <RowDefinition Height="150*"/>
+            <RowDefinition Height="60*"/>
+            <RowDefinition Height="70*"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="37*"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="20*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="380"/>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="500"/>
+            <ColumnDefinition Width="298"/>
+            <ColumnDefinition Width="298"/>
         </Grid.ColumnDefinitions>
 
         <TextBox Style="{DynamicResource RoundedTextBoxStyle}"
                  VerticalAlignment="Center"
                  HorizontalAlignment="Left"
-                 Margin="10,10,0,10"
+                 Margin="10,0,0,0"
                  Width="160"
                  TextWrapping="Wrap"
                  Text="Поиск"
                  Height="40"
                  />
 
-        <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1"
+        <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"  
                   Margin="10,10,10,10"
+                  MaxHeight="220"
                   DataContext="{DynamicResource MoviesGroup}"
                   ItemsSource="{Binding}"
                   AutoGenerateColumns="False"
                   VerticalGridLinesBrush="DarkGray"
                   GridLinesVisibility="All"
                   CanUserResizeColumns="False"
-                  SelectionUnit="Cell">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Название" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Продолжительность" Binding="{Binding Duration}"/>
-                <DataGridTextColumn Header="Количество Серий" Binding="{Binding CountOfSeries}"/>
-                <DataGridTextColumn Header="Год выхода" Binding="{Binding Release}"/>
-                <DataGridTextColumn Header="Накопитель" Binding="{Binding StorageName}"/>
+                  SelectionUnit="FullRow"
+                  ItemContainerStyle="{StaticResource MovieItemStyle}"
+                  SelectionMode="Single" >
+            <DataGrid.Columns >
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Название" Binding="{Binding Name}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Продолжительность" Binding="{Binding Duration}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Количество Серий" Binding="{Binding CountOfSeries}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Дата выхода" Binding="{Binding Release}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Накопитель" Binding="{Binding StorageName}"/>
             </DataGrid.Columns>
         </DataGrid>
 
@@ -90,16 +115,18 @@
         </TextBlock>
 
         <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+            DataContext="{DynamicResource MoviesGroup}"
             FontSize="14"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
-            Margin="10,0,0,0"
+            Margin="10,5,10,5"
             TextWrapping="Wrap"
-            Text="Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups."
+            Text="{Binding Description}"
             Background="Transparent"
-            BorderThickness="0" Height="38" Width="796"/>
+            BorderThickness="0" Height="45" Width="850"/>
 
-        <TextBlock Grid.Row="4" 
+        <TextBlock Grid.Row="4"
+            Margin="10,5,10,5"
             FontSize="14" 
             VerticalAlignment="Center" 
             HorizontalAlignment="Left" 
@@ -107,7 +134,9 @@
             Height="20" 
             Width="50"/>
 
-        <ListView Grid.Column="0" Grid.Row="5"
+        <ListView Grid.Column="0" Grid.Row="5" Grid.RowSpan="1"
+                  Margin="10,5,10,5"
+                  ItemsSource="{Binding}"
                   DataContext="{DynamicResource ActorsGroup}">
             <ListView.View>
                 <GridView>
@@ -121,23 +150,37 @@
                     </GridViewColumn>
                     <GridViewColumn 
                     Header="Отчество"
-                    DisplayMemberBinding="{Binding Patronymic}">
+                    DisplayMemberBinding="{Binding Patronym}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Пол"
+                    DisplayMemberBinding="{Binding Gender}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Дата рождения"
+                    DisplayMemberBinding="{Binding Birthday}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Страна"
+                    DisplayMemberBinding="{Binding Country}">
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
 
-        <TextBlock Grid.Row="4" Grid.Column="1"
+        <TextBlock Grid.Row="4"
+            Margin="10,5,10,5"
             FontSize="14"
             VerticalAlignment="Center"
             HorizontalAlignment="Left"
             Text="Режиссеры:"
             Height="20"
-            Width="76">
-        </TextBlock>
+            Width="76"  Grid.Column="1"/>
 
-        <ListView Grid.Column="1" Grid.Row="5"
-                  DataContext="{DynamicResource DirectorsGroup}">
+        <ListView Grid.Row="5" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="2"
+                  Margin="10,5,10,5"
+                  ItemsSource="{Binding}"
+                  DataContext="{DynamicResource DirectorsGroup}" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn 
@@ -152,17 +195,32 @@
                     Header="Отчество"
                     DisplayMemberBinding="{Binding Patronymic}">
                     </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Пол"
+                    DisplayMemberBinding="{Binding Gender}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Дата рождения"
+                    DisplayMemberBinding="{Binding Birthday}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Страна"
+                    DisplayMemberBinding="{Binding Country}">
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
 
         <TextBlock Grid.Row="6" 
-            FontSize="14" 
-            VerticalAlignment="Center" 
-            HorizontalAlignment="Left" 
-            Text="Жанры:" Height="19" Width="49"/>
+                   Margin="10,5,10,5"
+                   FontSize="14" 
+                   VerticalAlignment="Center" 
+                   HorizontalAlignment="Left" 
+                   Text="Жанры:" Height="19" Width="49"/>
 
-        <ListView Grid.Column="0" Grid.Row="7"
+        <ListView Grid.Column="0" Grid.Row="7"  Grid.RowSpan="1"
+                  Margin="10,5,10,5" 
+                  ItemsSource="{Binding}"
                   DataContext="{DynamicResource GenresGroup}">
             <ListView.View>
                 <GridView>
@@ -175,13 +233,15 @@
         </ListView>
 
         <TextBlock Grid.Row="6" Grid.Column="1"
+            Margin="10,5,10,5"
             FontSize="14"
             VerticalAlignment="Center"
             HorizontalAlignment="Left"
-            Text="Студии:">
-        </TextBlock>
+            Text="Студии:" Height="19" Width="49"/>
 
-        <ListView Grid.Column="1" Grid.Row="7"
+        <ListView Grid.Row="7" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2"
+                  Margin="10,5,10,5"
+                  ItemsSource="{Binding}"
                   DataContext="{DynamicResource StudiosGroup}">
             <ListView.View>
                 <GridView>
@@ -196,19 +256,21 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        
-        <Button Style="{DynamicResource BlackButton}" Grid.Row="8" Grid.Column="0"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center" Content="Отредактировать"
-            Height="30"
-            Width="116" FontStretch="Expanded">
-        </Button>
 
-        <Button Style="{DynamicResource BlackButton}" Grid.Row="8" Grid.Column="1"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center" Content="Удалить"
+        <Button Style="{DynamicResource BlackButton}" Grid.Row="1" Grid.Column="3"
+            Command="{Binding EditCommand}"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
+            Content="Отредактировать"
             Height="30"
-            Width="90">
-        </Button>
+            Width="116" FontStretch="Expanded" Margin="10,10,10,10"/>
+
+        <Button Style="{DynamicResource BlackButton}" Grid.Row="1" Grid.Column="3"
+            Command="{Binding DeleteCommand}"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
+            Content="Удалить"
+            Height="30"
+            Width="112" Margin="10,50,10,10"/>
     </Grid>
 </UserControl>
