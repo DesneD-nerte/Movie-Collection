@@ -30,19 +30,19 @@ namespace Movie_Collection.Model
         public string Release { get; set; }//////Были DateTime
         public List<Actor> Actors { get; set; }
         public List<Director> Directors { get; set; }
-        public List<Genre> Genres { get; set; }
         public List<Studio> Studios { get; set; }
+        public List<Genre> Genres { get; set; }
 
         public Movie() { }
-        public Movie(int inputID, string inputName, string inputDescription, Storage inputstorage, int inputNumSeries, string inputDuration, string inputReleased)
+        public Movie(int id, string name, string description, Storage storage, int numOfSeries, string duration, string release)
         {
-            ID = inputID;
-            Name = inputName;
-            Description = inputDescription;
-            Storage = inputstorage;
-            CountOfSeries = inputNumSeries;
-            Duration = inputDuration;
-            Release = inputReleased;
+            ID = id;
+            Name = name;
+            Description = description;
+            Storage = storage;
+            CountOfSeries = numOfSeries;
+            Duration = duration;
+            Release = release;
             Actors = new List<Actor>();
             Directors = new List<Director>();
             Genres = new List<Genre>();

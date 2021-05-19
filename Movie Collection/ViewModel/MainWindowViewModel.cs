@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
@@ -21,6 +22,11 @@ namespace Movie_Collection.ViewModel
         ReadOnlyCollection<CommandViewModel> commands;
         ObservableCollection<WorkspaceViewModel> workspaces;
         DataBaseWork dataBaseWork;
+        
+        RelayCommand aboutProgramm;
+        RelayCommand contactsProgramm;
+        RelayCommand referenceProgramm;
+        RelayCommand exitProgramm;
 
         #endregion
 
@@ -31,11 +37,63 @@ namespace Movie_Collection.ViewModel
             dataBaseWork = new DataBaseWork(databaseConnectionString);
         }
 
+        #region Команды менюшки
+        public ICommand AboutProgramm
+        {
+            get
+            {
+                if (aboutProgramm == null)
+                {
+                    aboutProgramm = new RelayCommand(param => MessageBox.Show("Коллекция фильмов с использованием базы данных и MVVM.\nСтудент: Ершов А.В.\nГруппа: БПИ - 311\nГод: 2021",
+                                                                                "О программе",
+                                                                                MessageBoxButton.OK,
+                                                                                MessageBoxImage.Information));
+                }
+                return aboutProgramm;
+            }
+        }
+        public ICommand ContactsProgramm
+        {
+            get
+            {
+                if (contactsProgramm == null)
+                {
+                    contactsProgramm = new RelayCommand(param => MessageBox.Show("Описание контактов для связи", "Контакты", MessageBoxButton.OK, MessageBoxImage.Information));
+                }
+                return contactsProgramm;
+            }
+        }
+        public ICommand ReferenceProgramm
+        {
+            get
+            {
+                if (referenceProgramm == null)
+                {
+                    referenceProgramm = new RelayCommand(param => MessageBox.Show("Необходимо выбрать одну из команд (Панель слева) и изучить, изменить, добавить, удалить данные из коллекции (Панель справа).", "Справка", MessageBoxButton.OK, MessageBoxImage.Information));
+                }
+                return referenceProgramm;
+            }
+        }
+
+        public ICommand ExitProgramm
+        {
+            get
+            {
+                if (exitProgramm == null)
+                {
+                    exitProgramm = new RelayCommand(param => Application.Current.Shutdown());
+                }
+                return exitProgramm;
+            }
+        }
+        #endregion
+
+        #region Команды в панели слева
         public ReadOnlyCollection<CommandViewModel> Commands
         {
             get
             {
-                if(commands == null)
+                if (commands == null)
                 {
                     List<CommandViewModel> cmds = this.CreateCommands();//Получаем команды при старте
                     commands = new ReadOnlyCollection<CommandViewModel>(cmds);
@@ -120,11 +178,9 @@ namespace Movie_Collection.ViewModel
         private void OnWorkspaceRequestClose(object sender, EventArgs e)
         {
             WorkspaceViewModel oneWorkspace = sender as WorkspaceViewModel;
-            oneWorkspace.Dispose();
+            //oneWorkspace.Dispose();
             this.Workspaces.Remove(oneWorkspace);
         }
-
-        #region Private Helpers
 
         private void SetActiveWorkspace(WorkspaceViewModel workspace)
         {
@@ -158,7 +214,7 @@ namespace Movie_Collection.ViewModel
                 as AllStudiosViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllStudiosViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllStudiosViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -172,7 +228,7 @@ namespace Movie_Collection.ViewModel
                 as AllActorsViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllActorsViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllActorsViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -186,7 +242,7 @@ namespace Movie_Collection.ViewModel
                 as AllDirectorsViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllDirectorsViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllDirectorsViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -200,7 +256,7 @@ namespace Movie_Collection.ViewModel
                 as AllGenresViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllGenresViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllGenresViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -244,7 +300,7 @@ namespace Movie_Collection.ViewModel
         }
         #endregion
 
-
+        #region Title
         //public string Title { get; set; } = "Коллекция фильмов";
 
         private string title = "Коллекция фильмов";
@@ -262,6 +318,6 @@ namespace Movie_Collection.ViewModel
                 OnPropertyChanged("Title");
             }
         }
-
+        #endregion
     }
 }

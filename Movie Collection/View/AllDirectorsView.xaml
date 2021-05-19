@@ -7,7 +7,106 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
 
+    <UserControl.Resources>
+        <CollectionViewSource 
+            x:Key="MoviesGroup"
+            Source="{Binding Path=Movies}">
+        </CollectionViewSource>
+
+        <CollectionViewSource
+            x:Key="DirectorsGroup" 
+            Source="{Binding Path=Directors}">
+        </CollectionViewSource>
+
+        <Style x:Key="MovieItemStyle" TargetType="{x:Type DataGridRow}">
+            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+            <Style.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsSelected" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="FontFamily" Value="Roboto" />
+                    <Setter Property="FontSize" Value="16" />
+                </MultiTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="78*"/>
+            <RowDefinition Height="78*"/>
+            <RowDefinition Height="29*"/>
+            <RowDefinition Height="219*"/>
+            <RowDefinition Height="46*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="554"/>
+            <ColumnDefinition Width="58*"/>
+            <ColumnDefinition Width="65*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox Style="{DynamicResource RoundedTextBoxStyle}" Grid.Column="0"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Left"
+                 Margin="10,0,0,0"
+                 Width="160"
+                 TextWrapping="Wrap"
+                 Text="Поиск"
+                 Height="40"
+                 />
+
+        <DataGrid Grid.Column="0" Grid.Row="1" Margin="10,10,10,10"
+                  AutoGenerateColumns="False"
+                  ItemsSource="{Binding}"
+                  ItemContainerStyle="{StaticResource MovieItemStyle}"
+                  DataContext="{DynamicResource DirectorsGroup}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Имя" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}"/>
+                <DataGridTextColumn Header="Отчество" Binding="{Binding Patronym}"/>
+                <DataGridTextColumn Header="Пол" Binding="{Binding Gender}"/>
+                <DataGridTextColumn Header="День рождения" Binding="{Binding Birthday}"/>
+                <DataGridTextColumn Header="Страна" Binding="{Binding Country}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock Grid.Row="2"
+            FontSize="14" 
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Left" 
+            Text="Фильмы:" Height="20" Width="60"
+            Margin="10,0,0,0"/>
+
+        <DataGrid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1"
+                  Margin="10,10,10,10"
+                  DataContext="{DynamicResource MoviesGroup}"
+                  ItemsSource="{Binding}"
+                  AutoGenerateColumns="False"
+                  VerticalGridLinesBrush="DarkGray"
+                  GridLinesVisibility="All"
+                  CanUserResizeColumns="False"
+                  SelectionUnit="Cell">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Продолжительность" Binding="{Binding Duration}"/>
+                <DataGridTextColumn Header="Количество Серий" Binding="{Binding CountOfSeries}"/>
+                <DataGridTextColumn Header="Год выхода" Binding="{Binding Release}"/>
+                <DataGridTextColumn Header="Накопитель" Binding="{Binding StorageName}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Style="{DynamicResource BlackButton}" Grid.Row="1"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left" Content="Отредактировать"
+            Height="30"
+            Width="116" FontStretch="Expanded" Margin="10,10,0,0" Grid.Column="1" Grid.ColumnSpan="2"/>
+
+        <Button Style="{DynamicResource BlackButton}" Grid.Row="1"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left" Content="Удалить"
+            Height="30"
+            Width="116" Margin="10,50,0,0" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
     </Grid>
 </UserControl>

@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Movie_Collection</RootNamespace>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Images/Логотип.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>

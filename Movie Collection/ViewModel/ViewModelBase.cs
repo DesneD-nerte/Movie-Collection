@@ -57,11 +57,12 @@ namespace Movie_Collection.ViewModel
 
         public void Dispose()
         {
-            this.OnDispose();
+            OnDispose();
         }
 
         protected virtual void OnDispose()
         {
+            
         }
     }
 }
