@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace Movie_Collection.View
 {
     /// <summary>
-    /// Логика взаимодействия для AddActorView.xaml
+    /// Логика взаимодействия для MovieDetailsView.xaml
     /// </summary>
-    public partial class AddActorView : UserControl
+    public partial class MovieDetailsView : UserControl
     {
-        public AddActorView()
+        public MovieDetailsView()
         {
             InitializeComponent();
         }

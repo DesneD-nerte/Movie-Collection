@@ -16,7 +16,7 @@ namespace Movie_Collection.View
     /// <summary>
     /// Логика взаимодействия для AddDirectorView.xaml
     /// </summary>
-    public partial class AddDirectorView : Page
+    public partial class AddDirectorView : UserControl
     {
         public AddDirectorView()
         {

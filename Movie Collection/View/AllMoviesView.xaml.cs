@@ -22,5 +22,10 @@ namespace Movie_Collection.View
         {
             InitializeComponent();
         }
+
+        private void MovieDetailsView_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

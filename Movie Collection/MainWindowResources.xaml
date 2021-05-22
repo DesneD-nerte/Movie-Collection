@@ -27,7 +27,22 @@
     <DataTemplate DataType="{x:Type vm:AllGenresViewModel}">
         <vw:AllGenresView />
     </DataTemplate>
-    
+
+    <DataTemplate DataType="{x:Type vm:AddMovieViewModel}">
+        <vw:AddMovieView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:AddActorViewModel}">
+        <vw:AddActorView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:AddDirectorViewModel}">
+        <vw:AddDirectorView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:AddStudioViewModel}">
+        <vw:AddStudioView />
+    </DataTemplate>
 
     <DataTemplate x:Key="ClosableTabItemTemplate">
         <DockPanel Width="150">

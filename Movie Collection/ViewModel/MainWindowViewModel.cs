@@ -1,4 +1,5 @@
 ﻿using Movie_Collection.DataAccess;
+using Movie_Collection.Model;
 using Movie_Collection.Properties;
 using System;
 using System.Collections.Generic;
@@ -200,7 +201,7 @@ namespace Movie_Collection.ViewModel
                 as AllMoviesViewModel;//Для явного приведения
             if(oneworkspace == null)
             {
-                oneworkspace = new AllMoviesViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllMoviesViewModel(dataBaseWork, this);//////////////////////////!!!!!!!!!!!!!!!!!
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -214,7 +215,7 @@ namespace Movie_Collection.ViewModel
                 as AllStudiosViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllStudiosViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllStudiosViewModel(dataBaseWork);//////
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -228,7 +229,7 @@ namespace Movie_Collection.ViewModel
                 as AllActorsViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllActorsViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllActorsViewModel(dataBaseWork);///////
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -242,7 +243,7 @@ namespace Movie_Collection.ViewModel
                 as AllDirectorsViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllDirectorsViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllDirectorsViewModel(dataBaseWork);//////
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -256,7 +257,7 @@ namespace Movie_Collection.ViewModel
                 as AllGenresViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllGenresViewModel(dataBaseWork);//////////////////////////!!!!!!!!!!!!!!!!!
+                oneworkspace = new AllGenresViewModel(dataBaseWork);////
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -265,7 +266,10 @@ namespace Movie_Collection.ViewModel
 
         private void ShowAddMovie()
         {
-            AddMovieViewModel oneworkspace = new AddMovieViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+            //Movie newMovie = new Movie();
+
+            AddMovieViewModel oneworkspace = new AddMovieViewModel(dataBaseWork);/////
+            //MovieViewModel oneworkspace = new MovieViewModel(dataBaseWork);
 
             this.Workspaces.Add(oneworkspace);
 
@@ -274,7 +278,7 @@ namespace Movie_Collection.ViewModel
 
         private void ShowAddStudio()
         {
-            AddStudioViewModel oneworkspace = new AddStudioViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+            AddStudioViewModel oneworkspace = new AddStudioViewModel();//////
 
             this.Workspaces.Add(oneworkspace);
 
@@ -283,7 +287,7 @@ namespace Movie_Collection.ViewModel
 
         private void ShowAddActor()
         {
-            AddActorViewModel oneworkspace = new AddActorViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+            AddActorViewModel oneworkspace = new AddActorViewModel();//////
 
             this.Workspaces.Add(oneworkspace);
 
@@ -292,13 +296,22 @@ namespace Movie_Collection.ViewModel
 
         private void ShowAddDirector()
         {
-            AddDirectorViewModel oneworkspace = new AddDirectorViewModel();//////////////////////////!!!!!!!!!!!!!!!!!
+            AddDirectorViewModel oneworkspace = new AddDirectorViewModel();/////
 
             this.Workspaces.Add(oneworkspace);
 
             this.SetActiveWorkspace(oneworkspace);
         }
         #endregion
+
+        public void ShowEditMovie(MovieViewModel movieViewModel)
+        {
+            //MovieViewModel oneworkspace = new MovieViewModel();//////
+
+            this.Workspaces.Add(movieViewModel);
+
+            this.SetActiveWorkspace(movieViewModel);
+        }
 
         #region Title
         //public string Title { get; set; } = "Коллекция фильмов";
