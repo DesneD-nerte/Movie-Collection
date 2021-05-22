@@ -16,7 +16,7 @@ namespace Movie_Collection.View
     /// <summary>
     /// Логика взаимодействия для AddStudioView.xaml
     /// </summary>
-    public partial class AddStudioView : Page
+    public partial class AddStudioView : UserControl
     {
         public AddStudioView()
         {

@@ -15,12 +15,12 @@ namespace Movie_Collection.Model
         public string Country { get; set; }
         public List<Movie> Movies { get; set; }
 
-        public Director(int id, string name, string surname, string patronymic, string gender, string birthday, string country)
+        public Director(int id, string name, string surname, string patronym, string gender, string birthday, string country)
         {
             ID = id;
             Name = name;
             Surname = surname;
-            Patronym = patronymic;
+            Patronym = patronym;
             Gender = gender;
             Birthday = birthday;
             Country = country;

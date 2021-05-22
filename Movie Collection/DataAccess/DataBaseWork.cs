@@ -39,9 +39,13 @@ namespace Movie_Collection.DataAccess
 
                 while(sqlDataReader.Read())
                 {
+                    // Movie movie = new Movie(
+                    //     Convert.ToInt32(sqlDataReader["Id_movie"]), sqlDataReader["Name"].ToString(), sqlDataReader["Description"].ToString(),
+                    //new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]),sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString());
+
                     Movie movie = new Movie(
                         Convert.ToInt32(sqlDataReader["Id_movie"]), sqlDataReader["Name"].ToString(), sqlDataReader["Description"].ToString(),
-                   new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]),sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString());
+                        new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]);
 
                     LoadMovieActors(movie);
                     LoadMovieDirectors(movie);
@@ -76,7 +80,7 @@ namespace Movie_Collection.DataAccess
                 sqlConnection.Open();
                 SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                while(sqlDataReader.Read())
+                while (sqlDataReader.Read())
                 {
                     movie.Actors.Add(new Actor
                             (Convert.ToInt32(sqlDataReader["Id_actor"]), sqlDataReader["Name"].ToString(), sqlDataReader["Surname"].ToString(),
@@ -252,9 +256,12 @@ namespace Movie_Collection.DataAccess
 
                 while (sqlDataReader.Read())
                 {
+                    //actor.Movies.Add(new Movie(
+                    //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                    //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
                     actor.Movies.Add(new Movie(
-                        Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                        new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
+                            Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                            new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
                 }
 
                 sqlDataReader.Close();
@@ -319,9 +326,12 @@ namespace Movie_Collection.DataAccess
 
                 while (sqlDataReader.Read())
                 {
+                    //director.Movies.Add(new Movie(
+                    //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                    //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
                     director.Movies.Add(new Movie(
-                        Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                        new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
+                            Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                            new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
                 }
 
                 sqlDataReader.Close();
@@ -382,9 +392,12 @@ namespace Movie_Collection.DataAccess
 
                 while (sqlDataReader.Read())
                 {
+                    //genre.Movies.Add(new Movie(
+                    //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                    //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
                     genre.Movies.Add(new Movie(
-                        Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                        new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
+                           Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                           new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
                 }
 
                 sqlDataReader.Close();
@@ -449,9 +462,12 @@ namespace Movie_Collection.DataAccess
 
                 while (sqlDataReader.Read())
                 {
+                    //studio.Movies.Add(new Movie(
+                    //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                    //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
                     studio.Movies.Add(new Movie(
-                        Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                        new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
+                            Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                            new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
                 }
 
                 sqlDataReader.Close();
@@ -459,6 +475,88 @@ namespace Movie_Collection.DataAccess
             }
         }
         #endregion
+
+        #region Загрузка всех накопителей
+        private void LoadStorages()
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            {
+                string query = "SELECT Storage.Id_storage, Storage.Name "+
+                               "FROM Storage";
+
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                sqlConnection.Open();
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                while (sqlDataReader.Read())
+                {
+                    Storage storage;
+
+                    storage = new Storage(
+                           Convert.ToInt32(sqlDataReader["id_storage"]), sqlDataReader["Name"].ToString());
+
+                    storages.Add(storage);
+                }
+
+                sqlDataReader.Close();
+                sqlConnection.Close();
+            }
+        }
+        #endregion
+
+        public void AddMovie(Movie movie)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            {
+                string query = "INSERT INTO Movie " +
+                               $"VALUES ('{movie.Name}', '{movie.Description}', '{movie.Storage.ID}', '{movie.CountOfSeries}', '{movie.Duration}', '{movie.Release}')";
+
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                sqlConnection.Open();
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                sqlDataReader.Close();
+                sqlConnection.Close();
+            }
+        }
+
+        public void DeleteMovie(Movie movie)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            {
+                string query = "DELETE FROM Movie " +
+                               $"WHERE Id_movie = {movie.ID }";
+
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                sqlConnection.Open();
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+
+
+                sqlDataReader.Close();
+                sqlConnection.Close();
+            }
+        }
+
+        public void UpdateMovie(Movie movie)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            {
+                string query = "INSERT INTO Movie " +
+                               $"VALUES ({movie.Name}, {movie.Description}, {movie.Storage.ID}, {movie.CountOfSeries}, {movie.Duration}, {movie.Release})";
+
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                sqlConnection.Open();
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                sqlDataReader.Close();
+                sqlConnection.Close();
+            }
+        }
 
         #region Получение сущностей
         public List<Movie> GetMovies()
@@ -496,15 +594,20 @@ namespace Movie_Collection.DataAccess
             LoadGenres();
             return new List<Genre>(genres);
         }
+        public List<Storage> GetStorages()
+        {
+            storages.Clear();
+
+            LoadStorages();
+            return new List<Storage>(storages);
+        }
         #endregion
 
 
-
-
         //if (sqlDataReader["Birthday"] != DBNull.Value)
-        //{
-        //     director.Birthday = (DateTime?)sqlDataReader["Birthday"];
-        //}
-        //DateTime?
+        //            {
+        //                director.Birthday = (DateTime?)sqlDataReader["Birthday"];
+        //            }
+        //            DateTime?
     }
 }

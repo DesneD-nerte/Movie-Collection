@@ -7,13 +7,13 @@ namespace Movie_Collection.ViewModel
 {
     class StudioViewModel : WorkspaceViewModel
     {
-        readonly Studio studio;
+        internal Studio Studio { get; set; }
         bool isSelected;
 
         public List<Movie> Movies { get; private set; }
         public StudioViewModel(Studio newStudio)
         {
-            studio = newStudio;
+            Studio = newStudio;
             Movies = newStudio.Movies;
         }
 
@@ -21,22 +21,22 @@ namespace Movie_Collection.ViewModel
         {
             get
             {
-                return studio.Name;
+                return Studio.Name;
             }
             set
             {
-                studio.Name = value;
+                Studio.Name = value;
             }
         }
         public string Country
         {
             get
             {
-                return studio.Country;
+                return Studio.Country;
             }
             set
             {
-                studio.Country = value;
+                Studio.Country = value;
             }
         }
         public bool IsSelected

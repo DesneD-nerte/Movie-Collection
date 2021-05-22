@@ -67,17 +67,18 @@
                     ContentTemplate="{StaticResource CommandsTemplate}"/>
             </Border>
 
-            <Border Grid.Column="2" Grid.ColumnSpan="6" Grid.Row="2" 
+            <ScrollViewer Grid.Column="2" Grid.ColumnSpan="6" Grid.Row="2">
+                <Border  
                     Background="#FF4E3B64"
                     CornerRadius="10" Margin="10,10,10,15" Grid.RowSpan="2">
-                <HeaderedContentControl 
+                <HeaderedContentControl
                     Content="{Binding Path=Workspaces}"
                     ContentTemplate="{StaticResource WorkspacesTemplate}"
                     Header="Workspaces"
                     Style="{StaticResource MainHCCStyle}">
                 </HeaderedContentControl>
-            </Border>
-
+                </Border>
+            </ScrollViewer>
         </Grid>
     </DockPanel>
 </Window>

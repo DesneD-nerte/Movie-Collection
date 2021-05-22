@@ -8,7 +8,7 @@ namespace Movie_Collection.ViewModel
 {
     class ActorViewModel : WorkspaceViewModel
     {
-        readonly Actor actor;
+        internal Actor actor;
         bool isSelected;
 
         public List<Movie> Movies { get; private set; }

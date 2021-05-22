@@ -7,13 +7,13 @@ namespace Movie_Collection.ViewModel
 {
     class GenreViewModel : WorkspaceViewModel
     {
-        readonly Genre genre;
+        internal Genre Genre { get; set; }
         bool isSelected;
 
         public List<Movie> Movies { get; private set; }
         public GenreViewModel(Genre newGenre)
         {
-            genre = newGenre;
+            Genre = newGenre;
             Movies = newGenre.Movies;
         }
 
@@ -21,11 +21,11 @@ namespace Movie_Collection.ViewModel
         {
             get
             {
-                return genre.Name;
+                return Genre.Name;
             }
             set
             {
-                genre.Name = value;
+                Genre.Name = value;
             }
         }
         public bool IsSelected

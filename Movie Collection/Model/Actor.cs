@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Movie_Collection.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,16 +16,28 @@ namespace Movie_Collection.Model
         public string Country { get; set; }
         public List<Movie> Movies { get; set; }
 
-        public Actor(int id, string name, string surname, string patronymic, string gender, string birthday, string country)
+        public Actor(int id, string name, string surname, string patronym, string gender, string birthday, string country)
         {
             ID = id;
             Name = name;
             Surname = surname;
-            Patronym = patronymic;
+            Patronym = patronym;
             Gender = gender;
             Birthday = birthday;
             Country = country;
             Movies = new List<Movie>();
         }
+
+        //public Actor(ActorViewModel actorViewModel)
+        //{
+        //    Name = actorViewModel.Name;
+        //    Surname = actorViewModel.Surname;
+        //    Patronym = Patronymic;
+        //    Gender = Gender;
+        //    Birthday = birthday;
+        //    Country = country;
+        //    Movies = new List<Movie>();
+        //}
+
     }
 }

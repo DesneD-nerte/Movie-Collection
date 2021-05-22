@@ -7,13 +7,13 @@ namespace Movie_Collection.ViewModel
 {
     class DirectorViewModel : WorkspaceViewModel
     {
-        readonly Director director;
+        internal Director Director { get; set; }
         bool isSelected;
 
         public List<Movie> Movies { get; private set; }
         public DirectorViewModel(Director newDirector)
         {
-            director = newDirector;
+            Director = newDirector;
             Movies = newDirector.Movies;
         }
 
@@ -21,66 +21,66 @@ namespace Movie_Collection.ViewModel
         {
             get
             {
-                return director.Name;
+                return Director.Name;
             }
             set
             {
-                director.Name = value;
+                Director.Name = value;
             }
         }
         public string Surname
         {
             get
             {
-                return director.Surname;
+                return Director.Surname;
             }
             set
             {
-                director.Surname = value;
+                Director.Surname = value;
             }
         }
         public string Patronym
         {
             get
             {
-                return director.Patronym;
+                return Director.Patronym;
             }
             set
             {
-                director.Patronym = value;
+                Director.Patronym = value;
             }
         }
         public string Gender
         {
             get
             {
-                return director.Gender;
+                return Director.Gender;
             }
             set
             {
-                director.Gender = value;
+                Director.Gender = value;
             }
         }
         public string Birthday
         {
             get
             {
-                return director.Birthday;
+                return Director.Birthday;
             }
             set
             {
-                director.Birthday = value;
+                Director.Birthday = value;
             }
         }
         public string Country
         {
             get
             {
-                return director.Country;
+                return Director.Country;
             }
             set
             {
-                director.Country = value;
+                Director.Country = value;
             }
         }
         public bool IsSelected

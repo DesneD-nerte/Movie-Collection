@@ -32,6 +32,7 @@ namespace Movie_Collection
 
             // Create the ViewModel to which 
             // the main window binds.
+            //string path = @"Data Source=pip-boy;Initial Catalog=BPI_21_ErshovAV_RGR;User ID=student;Password=studentFBI";
             string path = @"Data Source=DESKTOP-BPJV9MD\SQLEXPRESS;Initial Catalog=RGR;Integrated Security=True";
             var viewModel = new MainWindowViewModel(path);
 

@@ -1,0 +1,184 @@
+﻿<UserControl x:Class="Movie_Collection.View.MovieDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Movie_Collection.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="2"
+            FontSize="14"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Left"
+            Margin="10,0,0,0"
+            Text="Описание:"
+            FontWeight="Normal"
+            Height="18"
+            Width="116">
+        </TextBlock>
+
+        <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+           
+            FontSize="14"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Margin="10,5,10,5"
+            TextWrapping="Wrap"
+            Text="{Binding Description}"
+            Background="Transparent"
+            BorderThickness="0" Height="45" Width="850"/>
+
+        <TextBlock Grid.Row="4"
+            Margin="10,5,10,5"
+            FontSize="14" 
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Left" 
+            Text="Актеры:" 
+            Height="20" 
+            Width="50"/>
+
+        <ListView Grid.Column="0" Grid.Row="5" Grid.RowSpan="1"
+                  Margin="10,5,10,5"
+                  ItemsSource="{Binding Actors}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn 
+                        Header="Имя" 
+                        DisplayMemberBinding="{Binding Name}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                        Header="Фамилия" 
+                        DisplayMemberBinding="{Binding Surname}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Отчество"
+                    DisplayMemberBinding="{Binding Patronym}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Пол"
+                    DisplayMemberBinding="{Binding Gender}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Дата рождения"
+                    DisplayMemberBinding="{Binding Birthday}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Страна"
+                    DisplayMemberBinding="{Binding Country}">
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <TextBlock Grid.Row="4"
+            Margin="10,5,10,5"
+            FontSize="14"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Left"
+            Text="Режиссеры:"
+            Height="20"
+            Width="76"  Grid.Column="1"/>
+
+        <ListView Grid.Row="5" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="2"
+                  Margin="10,5,10,5"
+                  ItemsSource="{Binding Directors}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn 
+                        Header="Имя" 
+                        DisplayMemberBinding="{Binding Name}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                        Header="Фамилия" 
+                        DisplayMemberBinding="{Binding Surname}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Отчество"
+                    DisplayMemberBinding="{Binding Patronymic}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Пол"
+                    DisplayMemberBinding="{Binding Gender}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Дата рождения"
+                    DisplayMemberBinding="{Binding Birthday}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                    Header="Страна"
+                    DisplayMemberBinding="{Binding Country}">
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <TextBlock Grid.Row="6" 
+                   Margin="10,5,10,5"
+                   FontSize="14" 
+                   VerticalAlignment="Center" 
+                   HorizontalAlignment="Left" 
+                   Text="Жанры:" Height="19" Width="49"/>
+
+        <ListView Grid.Column="0" Grid.Row="7"  Grid.RowSpan="1"
+                  Margin="10,5,10,5" 
+                  ItemsSource="{Binding Genres}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn 
+                        Header="Название" 
+                        DisplayMemberBinding="{Binding Name}">
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <TextBlock Grid.Row="6" Grid.Column="1"
+            Margin="10,5,10,5"
+            FontSize="14"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Left"
+            Text="Студии:" Height="19" Width="49"/>
+
+        <ListView Grid.Row="7" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2"
+                  Margin="10,5,10,5"
+                  ItemsSource="{Binding Studios}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn 
+                        Header="Название" 
+                        DisplayMemberBinding="{Binding Name}">
+                    </GridViewColumn>
+                    <GridViewColumn 
+                        Header="Страна" 
+                        DisplayMemberBinding="{Binding Country}">
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Button Style="{DynamicResource BlackButton}" Grid.Row="9"
+            Command="{Binding EditCommand}"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
+            Content="Отредактировать"
+            Height="30"
+            Width="116" FontStretch="Expanded" Margin="342,15,0,0" Grid.ColumnSpan="2"/>
+    </Grid>
+</UserControl>
