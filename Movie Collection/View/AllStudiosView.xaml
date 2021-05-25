@@ -62,13 +62,13 @@
                  Text="Поиск"
                  Height="40"
                  />
-
+        
+        <!--ItemContainerStyle="{StaticResource MovieItemStyle}"-->
         <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1"
                   MaxHeight="350"
                   Margin="10,10,10,10"
-                  DataContext="{DynamicResource StudiosGroup}"
-                  ItemsSource="{Binding}"
-                  ItemContainerStyle="{StaticResource MovieItemStyle}"
+                  ItemsSource="{Binding Studios}"
+                  SelectedItem="{Binding SelectedStudio}"
                   AutoGenerateColumns="False"
                   VerticalGridLinesBrush="DarkGray"
                   GridLinesVisibility="All"
@@ -83,8 +83,8 @@
         <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"  
                   Margin="10,10,10,102"
                   MaxHeight="220"
-                  DataContext="{DynamicResource MoviesGroup}"
-                  ItemsSource="{Binding}"
+                  DataContext="{Binding SelectedStudio}"
+                  ItemsSource="{Binding Movies}"
                   AutoGenerateColumns="False"
                   VerticalGridLinesBrush="DarkGray"
                   GridLinesVisibility="All"

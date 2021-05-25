@@ -11,6 +11,10 @@ namespace Movie_Collection.ViewModel
         bool isSelected;
 
         public List<Movie> Movies { get; private set; }
+        public StorageViewModel()
+        {
+            Storage = new Storage();
+        }
         public StorageViewModel(Storage newStorage)
         {
             Storage = newStorage;

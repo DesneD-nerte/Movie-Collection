@@ -10,6 +10,10 @@ namespace Movie_Collection.Model
         public string Name { get; set; }
         public List<Movie> Movies { get; set; }
 
+        public Storage()
+        {
+
+        }
         public Storage(int id, string name)
         {
             ID = id;

@@ -6,83 +6,63 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text;
+using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
     class AllActorsViewModel : WorkspaceViewModel
     {
-        public ObservableCollection<ActorViewModel> Actors { get; private set; } //Все актеры которые есть
-        public ObservableCollection<MovieViewModel> Movies { get; private set; }//Фильмы, выбранного актера
-        ActorViewModel selectedActor;
-        bool actorSelected;
-
         DataBaseWork dataBaseActors;
-
-        public AllActorsViewModel(DataBaseWork dataBase)
+        public ObservableCollection<ActorViewModel> Actors { get; private set; } //Все актеры которые есть
+        ActorViewModel selectedActor;
+        public ActorViewModel SelectedActor
+        {
+            get => selectedActor;
+            set
+            {
+                selectedActor = value;
+                base.OnPropertyChanged("SelectedActor");
+            }
+        }
+        public AllActorsViewModel(DataBaseWork dataBase, MainWindowViewModel mainWindowViewModel = null)
         {
             base.DisplayName = Strings.AllActorsViewModel_DisplayName;
 
             dataBaseActors = dataBase;
-            GetAllActors();
+            GetAllActors(mainWindowViewModel);
         }
 
-        private void GetAllActors()
+        private void GetAllActors(MainWindowViewModel mainWindowViewModel = null)
         {
             Actors = new ObservableCollection<ActorViewModel>();
             foreach (var actor in dataBaseActors.GetActors())
             {
-                var newActor = new ActorViewModel(actor);
-
-                newActor.PropertyChanged += OnActorViewModelPropertyChanged;
+                var newActor = new ActorViewModel(actor, mainWindowViewModel);
 
                 Actors.Add(newActor);
             }
-            Actors.CollectionChanged += OnCollectionChanged;
         }
 
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        RelayCommand deleteCommand;
+
+        public ICommand DeleteCommand
         {
-            if (e.NewItems != null && e.NewItems.Count != 0)
+            get
             {
-                foreach (ActorViewModel vm in e.NewItems)
+                if (deleteCommand == null)
                 {
-                    vm.PropertyChanged += OnActorViewModelPropertyChanged;
+                    deleteCommand = new RelayCommand(param =>
+                    {
+                        if (selectedActor != null)
+                        {
+                            selectedActor.DeleteActor(dataBaseActors);
+                            Actors.Remove(selectedActor);
+                        }
+                    });
                 }
-            }
-
-            if (e.OldItems != null && e.OldItems.Count != 0)
-            {
-                foreach (ActorViewModel vm in e.OldItems)
-                {
-                    vm.PropertyChanged -= OnActorViewModelPropertyChanged;
-                }
+                return deleteCommand;
             }
         }
 
-        private void OnActorViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            string IsSelected = "IsSelected";
-
-            (sender as ActorViewModel).VerifyPropertyName(IsSelected);
-
-            if (e.PropertyName == IsSelected)
-            {
-                selectedActor = (ActorViewModel)sender;
-                actorSelected = true;
-                OutputDetailedInformation();
-            }
-        }
-
-        private void OutputDetailedInformation()
-        {
-            ObservableCollection<MovieViewModel> movies = new ObservableCollection<MovieViewModel>();
-            foreach (var movie in selectedActor.Movies)
-            {
-                var oneMovie = new MovieViewModel(movie);
-                movies.Add(oneMovie);
-            }
-            Movies = movies;
-            base.OnPropertyChanged("Movies");
-        }
     }
 }

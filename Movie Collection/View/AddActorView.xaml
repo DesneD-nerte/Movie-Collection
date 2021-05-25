@@ -4,10 +4,109 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Movie_Collection.View"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800">
+            xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity">
 
-    <Grid>
-        
+    <Grid Height="472" Width="1000" >
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type ValidationError}">
+                <TextBlock 
+                    FontStyle="Italic"
+                    Foreground="Red"
+                    HorizontalAlignment="Right"
+                    Margin="0,1"
+                    Text="{Binding Path=ErrorContent}" 
+                />
+            </DataTemplate>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.68*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.65*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="89*"/>
+            <RowDefinition Height="89*"/>
+            <RowDefinition Height="117*"/>
+            <RowDefinition Height="177*"/>
+
+        </Grid.RowDefinitions>
+
+        <Label Content="Имя:" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Height="33" Width="49"/>
+        <TextBox Grid.Column="1"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Left"
+                 FontSize="18"
+                 Margin="0,20,0,20"
+                 DataContext="{Binding Actor}"
+                 Text="{Binding Name, Mode=TwoWay}"/>
+
+        <Label Content="Фамилия:" Grid.Column="2" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Height="33" Width="88"/>
+        <TextBox Grid.Column="3"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Left"
+                 FontSize="18"
+                 Margin="0,20,0,20"
+                 DataContext="{Binding Actor}"
+                 Text="{Binding Surname, Mode=TwoWay}"/>
+
+        <Label Content="Отчество:" Grid.Column="4" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Height="33" Width="90"/>
+        <TextBox Grid.Column="5"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Left"
+                 FontSize="18"
+                 Margin="0,20,0,20"
+                 DataContext="{Binding Actor}"
+                 Text="{Binding Patronym, Mode=TwoWay}"/>
+
+        <CheckBox DataContext="{Binding Actor}" IsChecked="{Binding MaleGender}" Content="Муж" Grid.Column="1" HorizontalAlignment="Left" Margin="22,10,0,0" Grid.Row="1" VerticalAlignment="Top" Height="15" Width="45">
+            <CheckBox.LayoutTransform>
+                <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+            </CheckBox.LayoutTransform>
+        </CheckBox>
+        <CheckBox DataContext="{Binding Actor}" IsChecked="{Binding WomanGender}" Content="Жен" Grid.Column="1" HorizontalAlignment="Left" Margin="22,50,0,0" Grid.Row="1" VerticalAlignment="Top" Height="15" Width="43">
+            <CheckBox.LayoutTransform>
+                <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+            </CheckBox.LayoutTransform>
+        </CheckBox>
+
+        <Label Content="Дата рождения:"
+               FontSize="18"
+               Grid.Row="1" Grid.Column="2"
+               VerticalAlignment="Center"
+               Margin="0,0,0,0" Grid.ColumnSpan="1" Height="33">
+        </Label>
+
+        <TextBox Grid.Column="3"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Left"
+                 FontSize="18"
+                 DataContext="{Binding Actor}"
+                 Text="{Binding Birthday, Mode=TwoWay}" Margin="0,20,0,20" Grid.Row="1"/>
+
+        <ComboBox Grid.Column="5"
+                  FontSize="18"
+                  VerticalContentAlignment="Center"
+                  HorizontalContentAlignment="Left"
+                  ItemsSource="{Binding AllCountry}"
+                  SelectedItem="{Binding SelectedCountry, Mode=TwoWay}"
+                  DisplayMemberPath="Name"
+                  HorizontalAlignment="Center"
+                  Grid.Row="1"
+                  VerticalAlignment="Center"
+                  Width="207" Height="49"/>
+
+        <Label Content="Страна:"
+               FontSize="18"
+               Grid.Row="1" Grid.Column="4"
+               VerticalAlignment="Center"
+               HorizontalAlignment="Center" Height="33" Width="72"/>
+
+
+        <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
+                Content="Готово" Margin="44,37,49,10" FontSize="28"
+                Command="{Binding AddActorCommand}"/>
     </Grid>
 </UserControl>

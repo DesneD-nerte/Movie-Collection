@@ -3,7 +3,9 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:my="clr-namespace:Movie_Collection.View"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity">
+
     <!--d:DesignHeight="800" d:DesignWidth="800"-->
 
     <UserControl.Resources>
@@ -54,7 +56,7 @@
         </Style>
 
     </UserControl.Resources>
-    
+
 
     <Grid Width="1097">
         <Grid.RowDefinitions>
@@ -78,15 +80,20 @@
                  HorizontalAlignment="Left"
                  Margin="10,0,0,0"
                  Width="160"
+                 Text="{Binding SearchMovie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  TextWrapping="Wrap"
-                 Text="Поиск"
-                 Height="40"
-                 />
+                 Height="40">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="TextChanged">
+                    <intr:InvokeCommandAction Command="{Binding FindMovieCommand}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
+        </TextBox>
 
-        <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"  
+        <DataGrid Name="MainDataGrid" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"  
                   Margin="10,10,10,10"
                   MaxHeight="220"
-                 
+                  IsReadOnly="True"
                   ItemsSource="{Binding Movies}"
                   SelectedItem="{Binding SelectedMovie}"
                   AutoGenerateColumns="False"
@@ -94,28 +101,37 @@
                   GridLinesVisibility="All"
                   CanUserResizeColumns="False"
                   SelectionUnit="FullRow"
-                  SelectionMode="Single" >
-                  <!--ItemContainerStyle="{StaticResource MovieItemStyle}"-->
-                  
+                  SelectionMode="Single"
+                  SelectionChanged="MainDataGrid_SelectionChanged">
+            <!--ItemContainerStyle="{StaticResource MovieItemStyle}"-->
+
             <DataGrid.Columns >
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Название" Binding="{Binding Name}"/>
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Продолжительность" Binding="{Binding Duration}"/>
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Количество Серий" Binding="{Binding CountOfSeries}"/>
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Дата выхода" Binding="{Binding Release}"/>
-                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Накопитель" Binding="{Binding StorageName}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Накопитель" Binding="{Binding Storage.Name}"/>
             </DataGrid.Columns>
         </DataGrid>
-
+        <!--StorageName-->
         <my:MovieDetailsView  Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding SelectedMovie}"/>
 
 
-
-        <Button Style="{DynamicResource BlackButton}" Grid.Row="1" Grid.Column="3"
+        <Button Style="{DynamicResource BlackButton}" Grid.Row="1" Grid.Column="2"
             Command="{Binding DeleteCommand}"
             VerticalAlignment="Top"
             HorizontalAlignment="Left"
             Content="Удалить"
             Height="30"
-            Width="112" Margin="10,50,10,10"/>
+            Width="116" Margin="10,50,0,0"/>
+
+        <Button Style="{DynamicResource BlackButton}" Grid.Row="1"
+            DataContext="{Binding SelectedMovie}"
+            Command="{Binding EditCommand}"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
+            Content="Отредактировать"
+            Height="30"
+            Width="116" FontStretch="Expanded" Margin="10,8,0,0" Grid.Column="2"/>
     </Grid>
 </UserControl>

@@ -22,5 +22,6 @@ namespace Movie_Collection.View
         {
             InitializeComponent();
         }
+
     }
 }

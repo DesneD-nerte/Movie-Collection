@@ -229,7 +229,7 @@ namespace Movie_Collection.ViewModel
                 as AllActorsViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllActorsViewModel(dataBaseWork);///////
+                oneworkspace = new AllActorsViewModel(dataBaseWork, this);///////
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -243,7 +243,7 @@ namespace Movie_Collection.ViewModel
                 as AllDirectorsViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllDirectorsViewModel(dataBaseWork);//////
+                oneworkspace = new AllDirectorsViewModel(dataBaseWork, this);//////
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -266,10 +266,7 @@ namespace Movie_Collection.ViewModel
 
         private void ShowAddMovie()
         {
-            //Movie newMovie = new Movie();
-
             AddMovieViewModel oneworkspace = new AddMovieViewModel(dataBaseWork);/////
-            //MovieViewModel oneworkspace = new MovieViewModel(dataBaseWork);
 
             this.Workspaces.Add(oneworkspace);
 
@@ -287,7 +284,7 @@ namespace Movie_Collection.ViewModel
 
         private void ShowAddActor()
         {
-            AddActorViewModel oneworkspace = new AddActorViewModel();//////
+            AddActorViewModel oneworkspace = new AddActorViewModel(dataBaseWork);//////
 
             this.Workspaces.Add(oneworkspace);
 
@@ -296,7 +293,7 @@ namespace Movie_Collection.ViewModel
 
         private void ShowAddDirector()
         {
-            AddDirectorViewModel oneworkspace = new AddDirectorViewModel();/////
+            AddDirectorViewModel oneworkspace = new AddDirectorViewModel(dataBaseWork);/////
 
             this.Workspaces.Add(oneworkspace);
 
@@ -306,11 +303,27 @@ namespace Movie_Collection.ViewModel
 
         public void ShowEditMovie(MovieViewModel movieViewModel)
         {
-            //MovieViewModel oneworkspace = new MovieViewModel();//////
+            AddMovieViewModel oneworkspace = new AddMovieViewModel(dataBaseWork, movieViewModel);
 
-            this.Workspaces.Add(movieViewModel);
+            this.Workspaces.Add(oneworkspace);
 
-            this.SetActiveWorkspace(movieViewModel);
+            this.SetActiveWorkspace(oneworkspace);
+        }
+        public void ShowEditActor(ActorViewModel actorViewModel)
+        {
+            AddActorViewModel oneworkspace = new AddActorViewModel(dataBaseWork, actorViewModel);
+
+            this.Workspaces.Add(oneworkspace);
+
+            this.SetActiveWorkspace(oneworkspace);
+        }
+        public void ShowEditDirector(DirectorViewModel directorViewModel)
+        {
+            AddDirectorViewModel oneworkspace = new AddDirectorViewModel(dataBaseWork, directorViewModel);
+
+            this.Workspaces.Add(oneworkspace);
+
+            this.SetActiveWorkspace(oneworkspace);
         }
 
         #region Title

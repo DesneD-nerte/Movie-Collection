@@ -23,9 +23,12 @@ namespace Movie_Collection.View
             InitializeComponent();
         }
 
-        private void MovieDetailsView_Loaded(object sender, RoutedEventArgs e)
+        private void MainDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            if (MainDataGrid.SelectedItem != null)
+            {
+                MainDataGrid.ScrollIntoView(MainDataGrid.SelectedItem);
+            }
         }
     }
 }

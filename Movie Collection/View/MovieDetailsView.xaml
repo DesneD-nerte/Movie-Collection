@@ -173,12 +173,6 @@
             </ListView.View>
         </ListView>
 
-        <Button Style="{DynamicResource BlackButton}" Grid.Row="9"
-            Command="{Binding EditCommand}"
-            VerticalAlignment="Top"
-            HorizontalAlignment="Left"
-            Content="Отредактировать"
-            Height="30"
-            Width="116" FontStretch="Expanded" Margin="342,15,0,0" Grid.ColumnSpan="2"/>
+        
     </Grid>
 </UserControl>

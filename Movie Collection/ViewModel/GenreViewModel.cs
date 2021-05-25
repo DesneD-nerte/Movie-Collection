@@ -1,6 +1,9 @@
-﻿using Movie_Collection.Model;
+﻿using Movie_Collection.DataAccess;
+using Movie_Collection.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace Movie_Collection.ViewModel
@@ -8,13 +11,12 @@ namespace Movie_Collection.ViewModel
     class GenreViewModel : WorkspaceViewModel
     {
         internal Genre Genre { get; set; }
-        bool isSelected;
 
-        public List<Movie> Movies { get; private set; }
+        public ObservableCollection<MovieViewModel> Movies { get; private set; }
         public GenreViewModel(Genre newGenre)
         {
             Genre = newGenre;
-            Movies = newGenre.Movies;
+            Movies = new ObservableCollection<MovieViewModel>((from movie in newGenre.Movies select new MovieViewModel(movie)));
         }
 
         public string Name
@@ -28,21 +30,10 @@ namespace Movie_Collection.ViewModel
                 Genre.Name = value;
             }
         }
-        public bool IsSelected
+
+        public void DeleteGenre(DataBaseWork dataBase)
         {
-            get
-            {
-                return isSelected;
-            }
-            set
-            {
-                if (value == isSelected)
-                {
-                    return;
-                }
-                isSelected = value;
-                base.OnPropertyChanged("IsSelected");
-            }
+            dataBase.DeleteGenre(Genre);
         }
     }
 }

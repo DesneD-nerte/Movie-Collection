@@ -14,7 +14,6 @@ namespace Movie_Collection.ViewModel
     {
         Movie movie;
         bool isSelected = false;
-        DataBaseWork dataBase;
         MainWindowViewModel mainWindowViewModel;
 
         public string Name
@@ -84,22 +83,12 @@ namespace Movie_Collection.ViewModel
             }
         }
 
-        public bool IsSelected
+        public void UpdateStorage(Storage storage)
         {
-            get 
-            { 
-                return isSelected; 
-            }
-            set
-            {
-                if (value == IsSelected)
-                {
-                    return;
-                }
-                isSelected = value;
-                base.OnPropertyChanged("IsSelected");
-            }
+            Storage = new StorageViewModel(storage);/////////////////////////////
+            movie.Storage = storage;
         }
+
         RelayCommand editCommand;
 
         public ICommand EditCommand
@@ -120,6 +109,7 @@ namespace Movie_Collection.ViewModel
         public ObservableCollection<GenreViewModel> Genres { get; private set; }
         public ObservableCollection<StudioViewModel> Studios { get; private set; }
         public StorageViewModel Storage { get; set; }
+        
         public MovieViewModel(Movie newMovie, MainWindowViewModel mainWindowViewModel = null)
         {
             this.mainWindowViewModel = mainWindowViewModel;
@@ -129,6 +119,7 @@ namespace Movie_Collection.ViewModel
             Directors = new ObservableCollection<DirectorViewModel>(from director in newMovie.Directors select new DirectorViewModel(director));
             Genres = new ObservableCollection<GenreViewModel>(from genre in newMovie.Genres select new GenreViewModel(genre));
             Studios = new ObservableCollection<StudioViewModel>(from studio in newMovie.Studios select new StudioViewModel(studio));
+            Storage = new StorageViewModel(newMovie.Storage);
         }
         public MovieViewModel()
         {
@@ -137,6 +128,7 @@ namespace Movie_Collection.ViewModel
             Directors = new ObservableCollection<DirectorViewModel>();
             Genres = new ObservableCollection<GenreViewModel>();
             Studios = new ObservableCollection<StudioViewModel>();
+            Storage = new StorageViewModel();
         }
 
         //в самом классе Movie надо обновть списки
@@ -144,11 +136,11 @@ namespace Movie_Collection.ViewModel
         {
             foreach (var actorViewModel in Actors)
             {
-                movie.Actors.Add(actorViewModel.actor);
+                movie.Actors.Add(actorViewModel.Actor);
             }
             foreach (var directorViewModel in Directors)
             {
-                movie.Directors.Add(directorViewModel.Director);
+                movie.Directors.Add(directorViewModel.director);
             }
 
             foreach (var studioViewModel in Studios)
@@ -160,9 +152,16 @@ namespace Movie_Collection.ViewModel
             {
                 movie.Genres.Add(genreViewModel.Genre);
             }
-            movie.Storage = Storage.Storage;
 
-            dataBase.AddMovie(movie);
+
+            if (movie.ID == 0)
+            {
+                dataBase.AddMovie(movie);
+            }
+            else
+            {
+                dataBase.UpdateMovie(movie);
+            }
         }
         public void UpdateMovie(DataBaseWork dataBase)
         {

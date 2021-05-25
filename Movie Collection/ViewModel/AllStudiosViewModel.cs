@@ -11,12 +11,20 @@ namespace Movie_Collection.ViewModel
 {
     class AllStudiosViewModel : WorkspaceViewModel
     {
-        public ObservableCollection<StudioViewModel> Studios { get; private set; } //Все Студии которые есть
-        public ObservableCollection<MovieViewModel> Movies { get; private set; }//Фильмы, выбранного актера
-        StudioViewModel selectedStudio;
-        bool studioSelected;
-
         DataBaseWork dataBaseStudios;
+        public ObservableCollection<StudioViewModel> Studios { get; private set; } //Все Студии которые есть
+
+        StudioViewModel selectedStudio;
+
+        public StudioViewModel SelectedStudio
+        {
+            get => selectedStudio;
+            set
+            {
+                selectedStudio = value;
+                base.OnPropertyChanged("SelectedStudio");
+            }
+        }
 
         public AllStudiosViewModel(DataBaseWork dataBase)
         {
@@ -33,56 +41,8 @@ namespace Movie_Collection.ViewModel
             {
                 var newStudio = new StudioViewModel(studio);
 
-                newStudio.PropertyChanged += OnStudioViewModelPropertyChanged;
-
                 Studios.Add(newStudio);
             }
-            Studios.CollectionChanged += OnCollectionChanged;
-        }
-
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems != null && e.NewItems.Count != 0)
-            {
-                foreach (StudioViewModel vm in e.NewItems)
-                {
-                    vm.PropertyChanged += OnStudioViewModelPropertyChanged;
-                }
-            }
-
-            if (e.OldItems != null && e.OldItems.Count != 0)
-            {
-                foreach (StudioViewModel vm in e.OldItems)
-                {
-                    vm.PropertyChanged -= OnStudioViewModelPropertyChanged;
-                }
-            }
-        }
-
-        private void OnStudioViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            string IsSelected = "IsSelected";
-
-            (sender as StudioViewModel).VerifyPropertyName(IsSelected);
-
-            if (e.PropertyName == IsSelected)
-            {
-                selectedStudio = (StudioViewModel)sender;
-                studioSelected = true;
-                OutputDetailedInformation();
-            }
-        }
-
-        private void OutputDetailedInformation()
-        {
-            ObservableCollection<MovieViewModel> movies = new ObservableCollection<MovieViewModel>();
-            foreach (var movie in selectedStudio.Movies)
-            {
-                var oneMovie = new MovieViewModel(movie);
-                movies.Add(oneMovie);
-            }
-            Movies = movies;
-            base.OnPropertyChanged("Movies");
         }
     }
 }
