@@ -71,7 +71,8 @@ namespace Movie_Collection.ViewModel
             set
             {
                 selectedStorage = value;
-                Movie.Storage = value;
+                movie.UpdateStorage(value.Storage);
+
                 base.OnPropertyChanged("SelectedStorage");
             }
         }
@@ -82,7 +83,6 @@ namespace Movie_Collection.ViewModel
         public ObservableCollection<GenreViewModel> AllGenres { get; private set; }
         public ObservableCollection<StorageViewModel> AllStorages { get; private set; }
 
-
         DataBaseWork dataBaseAddMovie;
 
         RelayCommand doubleClickStudiosCommand;
@@ -92,7 +92,7 @@ namespace Movie_Collection.ViewModel
 
         RelayCommand addMovieCommand;
 
-        #region Двойной клик для выбора студий, актеров, режиссеров, жанров фильма
+        #region Двойной клик для выбора студий, актеров, режиссеров, жанров, накопителя фильма
         public ICommand DoubleClickStudiosCommand
         {
             get
@@ -183,14 +183,20 @@ namespace Movie_Collection.ViewModel
         /// Начинается процесс создания нового фильма с помощью обращения в базу данных
         /// </summary>
         /// <param name="dataBase"></param>
-        public AddMovieViewModel(DataBaseWork dataBase)
+        public AddMovieViewModel(DataBaseWork dataBase, MovieViewModel movieViewModel = null)
         {
-            movie = new MovieViewModel();
+            movie = movieViewModel != null ? movieViewModel : new MovieViewModel();
 
             base.DisplayName = Strings.AddMovieViewModel_DisplayName;
 
             dataBaseAddMovie = dataBase;
             FullData();
+            AssignSelectedEntities(Movie);
+        }
+
+        private void AssignSelectedEntities(MovieViewModel movie)
+        {
+            selectedStorage = movie.Storage;
         }
 
         private void FullData()

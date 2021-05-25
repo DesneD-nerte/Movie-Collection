@@ -1,104 +1,197 @@
-﻿using Movie_Collection.Model;
+﻿using Movie_Collection.DataAccess;
+using Movie_Collection.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
+using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
     class ActorViewModel : WorkspaceViewModel
     {
-        internal Actor actor;
-        bool isSelected;
+        internal Actor Actor { get; set; }
+        MainWindowViewModel mainWindowViewModel;
 
-        public List<Movie> Movies { get; private set; }
-        public ActorViewModel(Actor newActor)
+        public ObservableCollection<MovieViewModel> Movies { get; private set; }
+        public ActorViewModel(Actor newActor, MainWindowViewModel mainWindowViewModel = null)
         {
-            actor = newActor;
-            Movies = newActor.Movies;
+            this.mainWindowViewModel = mainWindowViewModel;
+
+            Actor = newActor;
+
+            if(Actor.Gender == "Муж")
+            {
+                MaleGender = true;
+            }
+            else
+            {
+                WomanGender = true;
+            }
+            Movies = new ObservableCollection<MovieViewModel>((from movie in newActor.Movies select new MovieViewModel(movie)));
+        }
+        public ActorViewModel()
+        {
+            Actor = new Actor();
+            Movies = new ObservableCollection<MovieViewModel>();
         }
 
         public string Name
         {
             get
             {
-                return actor.Name;
+                return Actor.Name;
             }
             set
             {
-                actor.Name = value;
+                Actor.Name = value;
             }
         }
         public string Surname
         {
             get
             {
-                return actor.Surname;
+                return Actor.Surname;
             }
             set
             {
-                actor.Surname = value;
+                Actor.Surname = value;
             }
         }
         public string Patronym
         {
             get
             {
-                return actor.Patronym;
+                return Actor.Patronym;
             }
             set
             {
-                actor.Patronym = value;
+                Actor.Patronym = value;
             }
         }
         public string Gender
         {
             get
             {
-                return actor.Gender;
+                return Actor.Gender;
             }
             set
             {
-                actor.Gender = value;
+                Actor.Gender = value;
             }
         }
-        public string Birthday
+        public DateTime? Birthday
         {
             get
             {
-                return actor.Birthday;
+                return Actor.Birthday;
             }
             set
             {
-                actor.Birthday = value;
+                Actor.Birthday = value;
             }
         }
-        public string Country
+        public string Country////////////////////////
         {
             get
             {
-                return actor.Country;
+                return Actor.Country.Name;
             }
             set
             {
-                actor.Country = value;
+                Actor.Country.Name = value;
             }
         }
-        public bool IsSelected
+
+        private bool maleGender;
+        private bool womanGender;
+
+        public bool MaleGender
         {
             get
             {
-                return isSelected;
+                return maleGender;
             }
             set
             {
-                if (value == isSelected)
+                if (value == true)
                 {
-                    return;
+                    maleGender = true;
+                    WomanGender = false;
                 }
-                isSelected = value;
-                base.OnPropertyChanged("IsSelected");
+                else
+                {
+                    maleGender = false;
+                }
+                Gender = "Муж";
+                base.OnPropertyChanged("MaleGender");
             }
+        }
+        public bool WomanGender
+        {
+            get
+            {
+                return womanGender;
+            }
+            set
+            {
+                if (value == true)
+                {
+                    womanGender = true;
+                    MaleGender = false;
+                }
+                else
+                {
+                    womanGender = false;
+                }
+                Gender = "Жен";
+                base.OnPropertyChanged("WomanGender");
+            }
+        }
+
+        public void UpdateGender(string gender)
+        {
+            Gender = gender;
+            Actor.Gender = gender;
+        }
+        public void UpdateCountry(Country country)
+        {
+            Country = country.Name;
+            Actor.Country = country;
+        }
+
+        RelayCommand editCommand;
+        public ICommand EditCommand
+        {
+            get
+            {
+                if (editCommand == null)
+                {
+                    editCommand = new RelayCommand(param => mainWindowViewModel.ShowEditActor(this));
+                }
+                return editCommand;
+            }
+        }
+
+        public void AddActor(DataBaseWork dataBase)
+        {
+            if (Actor.ID == 0)
+            {
+                dataBase.AddActor(Actor);
+            }
+            else
+            {
+                dataBase.UpdateActor(Actor);
+            }
+        }
+        public void UpdateActor(DataBaseWork dataBase)
+        {
+            dataBase.UpdateActor(Actor);
+        }
+        public void DeleteActor(DataBaseWork dataBase)
+        {
+            dataBase.DeleteActor(Actor);
         }
     }
 }

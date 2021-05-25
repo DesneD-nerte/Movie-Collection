@@ -5,19 +5,27 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
+using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
     class AllGenresViewModel : WorkspaceViewModel
     {
-        public ObservableCollection<GenreViewModel> Genres { get; private set; } //Все актеры которые есть
-        public ObservableCollection<MovieViewModel> Movies { get; private set; }//Фильмы, выбранного актера
-        GenreViewModel selectedGenre;
-        bool genreSelected;
-
         DataBaseWork dataBaseGenres;
+        public ObservableCollection<GenreViewModel> Genres { get; private set; } //Все актеры которые есть
 
+        GenreViewModel selectedGenre;
+        public GenreViewModel SelectedGenre
+        {
+            get => selectedGenre;
+            set
+            {
+                selectedGenre = value;
+                base.OnPropertyChanged("SelectedGenre");
+            }
+        }
         public AllGenresViewModel(DataBaseWork dataBase)
         {
             base.DisplayName = Strings.AllGenresViewModel_DisplayName;
@@ -33,56 +41,57 @@ namespace Movie_Collection.ViewModel
             {
                 var newGenre = new GenreViewModel(genre);
 
-                newGenre.PropertyChanged += OnGenreViewModelPropertyChanged;
-
                 Genres.Add(newGenre);
             }
-            Genres.CollectionChanged += OnCollectionChanged;
         }
 
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        RelayCommand deleteCommand;
+        RelayCommand findMovieCommand;
+        public ICommand DeleteCommand
         {
-            if (e.NewItems != null && e.NewItems.Count != 0)
+            get
             {
-                foreach (GenreViewModel vm in e.NewItems)
+                if (deleteCommand == null)
                 {
-                    vm.PropertyChanged += OnGenreViewModelPropertyChanged;
+                    deleteCommand = new RelayCommand(param =>
+                    {
+                        if (selectedGenre != null)
+                        {
+                            selectedGenre.DeleteGenre(dataBaseGenres);
+                            Genres.Remove(selectedGenre);
+                        }
+                    });
                 }
+                return deleteCommand;
             }
-
-            if (e.OldItems != null && e.OldItems.Count != 0)
+        }
+        public ICommand FindMovieCommand
+        {
+            get
             {
-                foreach (GenreViewModel vm in e.OldItems)
+                if (findMovieCommand == null)
                 {
-                    vm.PropertyChanged -= OnGenreViewModelPropertyChanged;
+                    findMovieCommand = new RelayCommand(param =>
+                    {
+                        try
+                        {
+                            selectedGenre = Genres.First(x => x.Name.Contains(SearchGenre));
+                        }
+                        catch { }
+                    });
                 }
+                return findMovieCommand;
             }
         }
 
-        private void OnGenreViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        string searchGenre = "Поиск";
+        public string SearchGenre
         {
-            string IsSelected = "IsSelected";
-
-            (sender as GenreViewModel).VerifyPropertyName(IsSelected);
-
-            if (e.PropertyName == IsSelected)
+            get => searchGenre;
+            set
             {
-                selectedGenre = (GenreViewModel)sender;
-                genreSelected = true;
-                OutputDetailedInformation();
+                searchGenre = value;
             }
-        }
-
-        private void OutputDetailedInformation()
-        {
-            ObservableCollection<MovieViewModel> movies = new ObservableCollection<MovieViewModel>();
-            foreach (var movie in selectedGenre.Movies)
-            {
-                var oneMovie = new MovieViewModel(movie);
-                movies.Add(oneMovie);
-            }
-            Movies = movies;
-            base.OnPropertyChanged("Movies");
         }
     }
 }

@@ -7,83 +7,64 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text;
+using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
     class AllDirectorsViewModel : WorkspaceViewModel
     {
-        public ObservableCollection<DirectorViewModel> Directors { get; private set; } //Все режиссеры которые есть
-        public ObservableCollection<MovieViewModel> Movies { get; private set; }//Фильмы, выбранного режиссера
-        DirectorViewModel selectedDirector;
-        bool directorSelected;
-
         DataBaseWork dataBaseDirectors;
 
-        public AllDirectorsViewModel(DataBaseWork dataBase)
+        public ObservableCollection<DirectorViewModel> Directors { get; private set; } //Все режиссеры которые есть
+        
+        DirectorViewModel selectedDirector;
+        public DirectorViewModel SelectedDirector
+        {
+            get => selectedDirector;
+            set
+            {
+                selectedDirector = value;
+                base.OnPropertyChanged("SelectedDirector");
+            }
+        }
+        public AllDirectorsViewModel(DataBaseWork dataBase, MainWindowViewModel mainWindowViewModel = null)
         {
             base.DisplayName = Strings.AllDirectorsViewModel_DisplayName;
 
             dataBaseDirectors = dataBase;
-            GetAllDirectors();
+            GetAllDirectors(mainWindowViewModel);
         }
 
-        private void GetAllDirectors()
+        private void GetAllDirectors(MainWindowViewModel mainWindowViewModel = null)
         {
             Directors = new ObservableCollection<DirectorViewModel>();
             foreach (var director in dataBaseDirectors.GetDirectors())
             {
-                var newDirector = new DirectorViewModel(director);
-
-                newDirector.PropertyChanged += OnDirectorViewModelPropertyChanged;
+                var newDirector = new DirectorViewModel(director, mainWindowViewModel);
 
                 Directors.Add(newDirector);
             }
-            Directors.CollectionChanged += OnCollectionChanged;
         }
 
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        RelayCommand deleteCommand;
+
+        public ICommand DeleteCommand
         {
-            if (e.NewItems != null && e.NewItems.Count != 0)
+            get
             {
-                foreach (DirectorViewModel vm in e.NewItems)
+                if (deleteCommand == null)
                 {
-                    vm.PropertyChanged += OnDirectorViewModelPropertyChanged;
+                    deleteCommand = new RelayCommand(param =>
+                    {
+                        if (selectedDirector != null)
+                        {
+                            selectedDirector.DeleteDirector(dataBaseDirectors);
+                            Directors.Remove(selectedDirector);
+                        }
+                    });
                 }
+                return deleteCommand;
             }
-
-            if (e.OldItems != null && e.OldItems.Count != 0)
-            {
-                foreach (DirectorViewModel vm in e.OldItems)
-                {
-                    vm.PropertyChanged -= OnDirectorViewModelPropertyChanged;
-                }
-            }
-        }
-
-        private void OnDirectorViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            string IsSelected = "IsSelected";
-
-            (sender as DirectorViewModel).VerifyPropertyName(IsSelected);
-
-            if (e.PropertyName == IsSelected)
-            {
-                selectedDirector = (DirectorViewModel)sender;
-                directorSelected = true;
-                OutputDetailedInformation();
-            }
-        }
-
-        private void OutputDetailedInformation()
-        {
-            ObservableCollection<MovieViewModel> movies = new ObservableCollection<MovieViewModel>();
-            foreach (var movie in selectedDirector.Movies)
-            {
-                var oneMovie = new MovieViewModel(movie);
-                movies.Add(oneMovie);
-            }
-            Movies = movies;
-            base.OnPropertyChanged("Movies");
         }
     }
 }

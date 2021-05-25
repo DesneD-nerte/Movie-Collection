@@ -44,6 +44,12 @@
         <vw:AddStudioView />
     </DataTemplate>
 
+    
+    
+    <DataTemplate DataType="{x:Type vm:MovieViewModel}">
+        <vw:AddMovieView />
+    </DataTemplate>
+
     <DataTemplate x:Key="ClosableTabItemTemplate">
         <DockPanel Width="150">
             <Button

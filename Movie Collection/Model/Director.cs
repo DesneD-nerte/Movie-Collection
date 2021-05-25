@@ -11,11 +11,17 @@ namespace Movie_Collection.Model
         public string Surname { get;  set; } 
         public string Patronym { get;  set; }
         public string Gender { get; set; }
-        public string Birthday { get; set; }
-        public string Country { get; set; }
+        public DateTime? Birthday { get; set; }
+        public Country Country { get; set; }
         public List<Movie> Movies { get; set; }
 
-        public Director(int id, string name, string surname, string patronym, string gender, string birthday, string country)
+        public Director()
+        {
+            Country = new Country();
+            Movies = new List<Movie>();
+        }
+
+        public Director(int id, string name, string surname, string patronym, string gender, DateTime? birthday, Country country)
         {
             ID = id;
             Name = name;
