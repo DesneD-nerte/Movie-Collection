@@ -35,6 +35,13 @@ namespace Movie_Collection.ViewModel
             Actors = new ObservableCollection<ActorViewModel>((from actor in newCountry.Actors select new ActorViewModel(actor)));
             Directors = new ObservableCollection<DirectorViewModel>((from director in newCountry.Directors select new DirectorViewModel(director)));
         }
+        public CountryViewModel()
+        {
+            Country = new Country();
+            Studios = new ObservableCollection<StudioViewModel>();
+            Actors = new ObservableCollection<ActorViewModel>();
+            Directors = new ObservableCollection<DirectorViewModel>();
+        }
 
     }
 }

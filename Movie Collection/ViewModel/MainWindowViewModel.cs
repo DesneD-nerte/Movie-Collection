@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -109,7 +110,11 @@ namespace Movie_Collection.ViewModel
             {
                 new CommandViewModel(
                     Strings.MainWindowViewModel_Command_ViewAllMovies,
-                    new RelayCommand(param => this.ShowAllMovies())),
+                    new RelayCommand(param =>
+                    {
+                        this.ShowAllMovies();
+                        //MessageBox.Show("qwqe");
+                    })),
 
                 new CommandViewModel(
                     Strings.MainWindowViewModel_Command_ViewAllStudios,
@@ -194,18 +199,21 @@ namespace Movie_Collection.ViewModel
             }
         }
 
-        private void ShowAllMovies()
+        private async void ShowAllMovies()
         {
-            AllMoviesViewModel oneworkspace =
-                this.Workspaces.FirstOrDefault(vm => vm is AllMoviesViewModel)//является данным типом
-                as AllMoviesViewModel;//Для явного приведения
-            if(oneworkspace == null)
+            await Dispatcher.InvokeAsync(()=>
             {
-                oneworkspace = new AllMoviesViewModel(dataBaseWork, this);//////////////////////////!!!!!!!!!!!!!!!!!
-                this.Workspaces.Add(oneworkspace);
-            }
+                AllMoviesViewModel oneworkspace =
+                    this.Workspaces.FirstOrDefault(vm => vm is AllMoviesViewModel)//является данным типом
+                    as AllMoviesViewModel;//Для явного приведения
+                if (oneworkspace == null)
+                {
+                    oneworkspace = new AllMoviesViewModel(dataBaseWork, this);//////////////////////////!!!!!!!!!!!!!!!!!
+                    this.Workspaces.Add(oneworkspace);
+                }
 
-            this.SetActiveWorkspace(oneworkspace);
+                this.SetActiveWorkspace(oneworkspace);
+            });
         }
 
         private void ShowAllStudios()
@@ -215,7 +223,7 @@ namespace Movie_Collection.ViewModel
                 as AllStudiosViewModel;//Для явного приведения
             if (oneworkspace == null)
             {
-                oneworkspace = new AllStudiosViewModel(dataBaseWork);//////
+                oneworkspace = new AllStudiosViewModel(dataBaseWork, this);//////
                 this.Workspaces.Add(oneworkspace);
             }
 
@@ -275,7 +283,7 @@ namespace Movie_Collection.ViewModel
 
         private void ShowAddStudio()
         {
-            AddStudioViewModel oneworkspace = new AddStudioViewModel();//////
+            AddStudioViewModel oneworkspace = new AddStudioViewModel(dataBaseWork);//////
 
             this.Workspaces.Add(oneworkspace);
 
@@ -325,7 +333,14 @@ namespace Movie_Collection.ViewModel
 
             this.SetActiveWorkspace(oneworkspace);
         }
+        public void ShowEditStudio(StudioViewModel studioViewModel)
+        {
+            AddStudioViewModel oneworkspace = new AddStudioViewModel(dataBaseWork, studioViewModel);
 
+            this.Workspaces.Add(oneworkspace);
+
+            this.SetActiveWorkspace(oneworkspace);
+        }
         #region Title
         //public string Title { get; set; } = "Коллекция фильмов";
 

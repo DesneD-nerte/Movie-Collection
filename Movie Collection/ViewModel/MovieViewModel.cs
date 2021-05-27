@@ -71,17 +71,17 @@ namespace Movie_Collection.ViewModel
                 movie.Release = value;
             }
         }
-        public string StorageName
-        {
-            get
-            {
-                return movie.Storage.Name;
-            }
-            set
-            {
-                movie.Storage.Name = value;
-            }
-        }
+        //public string StorageName
+        //{
+        //    get
+        //    {
+        //        return movie.Storage.Name;
+        //    }
+        //    set
+        //    {
+        //        movie.Storage.Name = value;
+        //    }
+        //}
 
         public void UpdateStorage(Storage storage)
         {

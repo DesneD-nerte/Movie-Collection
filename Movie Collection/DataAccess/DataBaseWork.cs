@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Movie_Collection.DataAccess
@@ -753,7 +754,7 @@ namespace Movie_Collection.DataAccess
             using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
             {
                 string query = "INSERT INTO Studio " +
-                               $"VALUES ('{studio.ID}', '{studio.Name}', '{studio.Country.ID}')";
+                               $"VALUES ('{studio.Name}', '{studio.Country.ID}')";
 
                 SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
@@ -802,12 +803,15 @@ namespace Movie_Collection.DataAccess
         #endregion
 
         #region Получение сущностей
-        public List<Movie> GetMovies()
+        public Task<List<Movie>> GetMovies()
         {
-            movies.Clear();
+            return Task.Run<List<Movie>>(() =>
+            {
+                movies.Clear();
 
-            LoadMovies();
-            return new List<Movie>(movies);
+                LoadMovies();
+                return new List<Movie>(movies);
+            });
         }
         public List<Actor> GetActors()
         {

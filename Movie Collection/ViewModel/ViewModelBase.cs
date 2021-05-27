@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Windows.Threading;
 
 namespace Movie_Collection.ViewModel
 {
     internal abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
-        protected ViewModelBase() { }
+        protected ViewModelBase()
+        {
+            Dispatcher = Dispatcher.CurrentDispatcher;
+        }
+
+        public Dispatcher Dispatcher {get;set;}
+
 
         #region Отображаемое имя
         public virtual string DisplayName { get; protected set; }

@@ -3,8 +3,9 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Movie_Collection.View"
-      mc:Ignorable="d" 
+      xmlns:local="clr-namespace:Movie_Collection.View" 
+             xmlns:intr="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
@@ -54,29 +55,36 @@
         </Grid.ColumnDefinitions>
 
         <TextBox Style="{DynamicResource RoundedTextBoxStyle}" Grid.Column="0"
+                 Text="{Binding SearchStudio, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  VerticalAlignment="Center"
                  HorizontalAlignment="Left"
                  Margin="10,0,0,0"
                  Width="160"
                  TextWrapping="Wrap"
-                 Text="Поиск"
-                 Height="40"
-                 />
+                 Height="40">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="TextChanged">
+                    <intr:InvokeCommandAction Command="{Binding FindStudioCommand}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
+        </TextBox>
         
         <!--ItemContainerStyle="{StaticResource MovieItemStyle}"-->
-        <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1"
+        <DataGrid x:Name="MainDataGrid" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1"
                   MaxHeight="350"
                   Margin="10,10,10,10"
+                  IsReadOnly="True"
                   ItemsSource="{Binding Studios}"
                   SelectedItem="{Binding SelectedStudio}"
                   AutoGenerateColumns="False"
                   VerticalGridLinesBrush="DarkGray"
                   GridLinesVisibility="All"
                   CanUserResizeColumns="False"
-                  SelectionUnit="FullRow">
+                  SelectionMode="Single"
+                  SelectionUnit="FullRow" SelectionChanged="MainDataGrid_SelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Название" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Страна" Binding="{Binding Country}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Название" Binding="{Binding Name}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Страна" Binding="{Binding Country.Name}"/>
             </DataGrid.Columns>
         </DataGrid>
 
@@ -101,12 +109,15 @@
         </DataGrid>
 
         <Button Style="{DynamicResource BlackButton}" Grid.Row="2"
+            DataContext="{Binding SelectedStudio}"
+            Command="{Binding EditStudioCommand}"
             VerticalAlignment="Center"
             HorizontalAlignment="Left" Content="Отредактировать"
             Height="30"
             Width="116" FontStretch="Expanded" Margin="54,0,0,0"/>
 
         <Button Style="{DynamicResource BlackButton}" Grid.Row="2"
+            Command="{Binding DeleteStudioCommand}"
             VerticalAlignment="Center"
             HorizontalAlignment="Left" Content="Удалить"
             Height="30"
