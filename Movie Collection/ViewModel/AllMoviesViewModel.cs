@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -43,13 +44,12 @@ namespace Movie_Collection.ViewModel
         }
 
         //Добавление всех фильмов на таблицу поочередно
-        private void GetAllMovies(MainWindowViewModel mainWindowViewModel = null)
+        private async void GetAllMovies(MainWindowViewModel mainWindowViewModel = null)
         {
             Movies = new ObservableCollection<MovieViewModel>();
-            foreach (var movie in dataBaseMovies.GetMovies())
+            foreach (var movie in await dataBaseMovies.GetMovies())
             {
                 var newMovie = new MovieViewModel(movie, mainWindowViewModel);
-
 
                 Movies.Add(newMovie);
             }

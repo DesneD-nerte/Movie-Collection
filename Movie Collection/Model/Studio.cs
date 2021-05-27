@@ -18,5 +18,10 @@ namespace Movie_Collection.Model
             Country = country;
             Movies = new List<Movie>();
         }
+        public Studio()
+        {
+            Country = new Country();
+            Movies = new List<Movie>();
+        }
     }
 }

@@ -15,11 +15,11 @@
             <ColumnDefinition Width="0.2*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock HorizontalAlignment="Center"
+        <TextBlock HorizontalAlignment="Left"
                    FontSize="18"
                    Text="Название:"
                    TextWrapping="Wrap"
-                   VerticalAlignment="Top" Height="24" Width="82" Margin="0,28,0,0"/>
+                   VerticalAlignment="Top" Height="24" Width="91" Margin="43,28,0,0"/>
 
         <TextBox HorizontalAlignment="Left"
                  VerticalContentAlignment="Center"
@@ -27,7 +27,9 @@
                  FontSize="18"
                  TextWrapping="Wrap"
                  Width="406"
-                 Grid.Column="1" Margin="10,17,0,17"/>
+                 Grid.Column="1" Margin="10,17,0,17"
+                 DataContext="{Binding Studio}"
+                 Text="{Binding Name, Mode=TwoWay}"/>
 
         <ComboBox Grid.Column="1"
                   VerticalContentAlignment="Center"
@@ -35,7 +37,10 @@
                   FontSize="18"
                   HorizontalAlignment="Left" 
                   Margin="10,18,0,21"
-                  Width="285" Grid.Row="1"/>
+                  Width="285" Grid.Row="1"
+                  SelectedItem="{Binding SelectedCountry, Mode=TwoWay}"
+                  ItemsSource="{Binding AllCountry}"
+                  DisplayMemberPath="Name"/>
 
         <TextBlock HorizontalAlignment="Left"
             FontSize="18"
