@@ -1,37 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace Movie_Collection.Model
 {
-    class Movie
+    class Movie : IDataErrorInfo
     {
-        /////////////////////////////////////////////////////////Раньше сеттеры были приватными
-        #region Приватные сеттеры
-        //public int ID { get; private set; }
-        //public string Name { get; private set; }
-        //public Storage Storage { get; private set; }
-        //public string Description { get; private set; } 
-        //public string Duration { get; private set; }  //////
-        //public int CountOfSeries { get; private set; }
-        //public string Release { get; private set; }//////
-        //public List<Actor> Actors { get; private set; }
-        //public List<Director> Directors { get; private set; }
-        //public List<Genre> Genres { get; private set; } 
-        //public List<Studio> Studios { get; private set; }
-        #endregion
-
         public int ID { get; set; }
         public string Name { get; set; }
         public Storage Storage { get; set; }
         public string Description { get; set; }
-        public TimeSpan Duration { get; set; }  //////Были DateTime
+        public TimeSpan Duration { get; set; }
         public int CountOfSeries { get; set; }
-        public DateTime Release { get; set; }//////Были DateTime
+        public DateTime Release { get; set; }
         public List<Actor> Actors { get; set; }
         public List<Director> Directors { get; set; }
         public List<Studio> Studios { get; set; }
         public List<Genre> Genres { get; set; }
+
+        public string Error
+        {
+            get => throw new NotImplementedException();
+        }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                string error = String.Empty;
+                switch (columnName)
+                {
+                    case "ID":
+                        if(ID < 0)
+                        {
+                            error = "Идентификатор не может быть отрицательным";
+                        }
+                        break;
+                    case "Name":
+                        if(String.IsNullOrEmpty(Name) || String.IsNullOrWhiteSpace(Name))
+                        {
+                            error = "Недопустимое название";
+                        }
+                        break;
+                    case "CountOfSeries":
+                        if(CountOfSeries < 0)
+                        {
+                            error = "Количество серий не может быть отрицательным";
+                        }
+                        break;
+                }
+                return error;
+            }
+        }
 
         public Movie() 
         {

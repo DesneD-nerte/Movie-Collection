@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
@@ -32,10 +33,10 @@ namespace Movie_Collection.ViewModel
             GetAllActors(mainWindowViewModel);
         }
 
-        private void GetAllActors(MainWindowViewModel mainWindowViewModel = null)
+        private async void GetAllActors(MainWindowViewModel mainWindowViewModel = null)
         {
             Actors = new ObservableCollection<ActorViewModel>();
-            foreach (var actor in dataBaseActors.GetActors())
+            foreach (var actor in await dataBaseActors.GetActors())
             {
                 var newActor = new ActorViewModel(actor, mainWindowViewModel);
 
@@ -44,6 +45,7 @@ namespace Movie_Collection.ViewModel
         }
 
         RelayCommand deleteCommand;
+        RelayCommand findActorCommand;
 
         public ICommand DeleteCommand
         {
@@ -61,6 +63,34 @@ namespace Movie_Collection.ViewModel
                     });
                 }
                 return deleteCommand;
+            }
+        }
+        public ICommand FindActorCommand
+        {
+            get
+            {
+                if (findActorCommand == null)
+                {
+                    findActorCommand = new RelayCommand(param =>
+                    {
+                        try
+                        {
+                            SelectedActor = Actors.First(x => x.Name.Contains(SearchActor));
+                        }
+                        catch { }
+                    });
+                }
+                return findActorCommand;
+            }
+        }
+
+        string searchActor = "Поиск";
+        public string SearchActor
+        {
+            get => searchActor;
+            set
+            {
+                searchActor = value;
             }
         }
 

@@ -8,8 +8,6 @@ namespace Movie_Collection.ViewModel
     class StorageViewModel : WorkspaceViewModel
     {
         public Storage Storage { get; set; }
-        bool isSelected;
-
         public List<Movie> Movies { get; private set; }
         public StorageViewModel()
         {

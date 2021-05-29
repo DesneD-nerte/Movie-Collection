@@ -11,7 +11,7 @@ namespace Movie_Collection.ViewModel
 {
     class DirectorViewModel : WorkspaceViewModel
     {
-        internal Director director;
+        internal Director Director { get; set; }
         MainWindowViewModel mainWindowViewModel;
 
         public ObservableCollection<MovieViewModel> Movies { get; private set; }
@@ -19,9 +19,9 @@ namespace Movie_Collection.ViewModel
         {
             this.mainWindowViewModel = mainWindowViewModel;
 
-            director = newDirector;
+            Director = newDirector;
 
-            if (director.Gender == "Муж")
+            if (Director.Gender == "Муж")
             {
                 MaleGender = true;
             }
@@ -35,7 +35,7 @@ namespace Movie_Collection.ViewModel
 
         public DirectorViewModel()
         {
-            director = new Director();
+            Director = new Director();
             Movies = new ObservableCollection<MovieViewModel>();
         }
 
@@ -43,66 +43,66 @@ namespace Movie_Collection.ViewModel
         {
             get
             {
-                return director.Name;
+                return Director.Name;
             }
             set
             {
-                director.Name = value;
+                Director.Name = value;
             }
         }
         public string Surname
         {
             get
             {
-                return director.Surname;
+                return Director.Surname;
             }
             set
             {
-                director.Surname = value;
+                Director.Surname = value;
             }
         }
         public string Patronym
         {
             get
             {
-                return director.Patronym;
+                return Director.Patronym;
             }
             set
             {
-                director.Patronym = value;
+                Director.Patronym = value;
             }
         }
         public string Gender
         {
             get
             {
-                return director.Gender;
+                return Director.Gender;
             }
             set
             {
-                director.Gender = value;
+                Director.Gender = value;
             }
         }
         public DateTime? Birthday
         {
             get
             {
-                return director.Birthday;
+                return Director.Birthday;
             }
             set
             {
-                director.Birthday = value;
+                Director.Birthday = value;
             }
         }
         public string Country
         {
             get
             {
-                return director.Country.Name;
+                return Director.Country.Name;
             }
             set
             {
-                director.Country.Name = value;
+                Director.Country.Name = value;
             }
         }
 
@@ -155,12 +155,12 @@ namespace Movie_Collection.ViewModel
         public void UpdateGender(string gender)
         {
             Gender = gender;
-            director.Gender = gender;
+            Director.Gender = gender;
         }
         public void UpdateCountry(Country country)
         {
             Country = country.Name;
-            director.Country = country;
+            Director.Country = country;
         }
 
         RelayCommand editCommand;
@@ -178,22 +178,22 @@ namespace Movie_Collection.ViewModel
 
         public void AddDirector(DataBaseWork dataBase)
         {
-            if (director.ID == 0)
+            if (Director.ID == 0)
             {
-                dataBase.AddDirector(director);
+                dataBase.AddDirector(Director);
             }
             else
             {
-                dataBase.UpdateDirector(director);
+                dataBase.UpdateDirector(Director);
             }
         }
         public void UpdateDirector(DataBaseWork dataBase)
         {
-            dataBase.UpdateDirector(director);
+            dataBase.UpdateDirector(Director);
         }
         public void DeleteDirector(DataBaseWork dataBase)
         {
-            dataBase.DeleteDirector(director);
+            dataBase.DeleteDirector(Director);
         }
     }
 }

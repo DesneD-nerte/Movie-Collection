@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -35,7 +37,6 @@ namespace Movie_Collection.ViewModel
         public MainWindowViewModel(string databaseConnectionString)
         {
             //base.DisplayName = Strings.MainWindowViewModel_DisplayName;
-
             dataBaseWork = new DataBaseWork(databaseConnectionString);
         }
 
@@ -110,11 +111,7 @@ namespace Movie_Collection.ViewModel
             {
                 new CommandViewModel(
                     Strings.MainWindowViewModel_Command_ViewAllMovies,
-                    new RelayCommand(param =>
-                    {
-                        this.ShowAllMovies();
-                        //MessageBox.Show("qwqe");
-                    })),
+                    new RelayCommand(param => this.ShowAllMovies())),
 
                 new CommandViewModel(
                     Strings.MainWindowViewModel_Command_ViewAllStudios,
@@ -184,7 +181,7 @@ namespace Movie_Collection.ViewModel
         private void OnWorkspaceRequestClose(object sender, EventArgs e)
         {
             WorkspaceViewModel oneWorkspace = sender as WorkspaceViewModel;
-            //oneWorkspace.Dispose();
+
             this.Workspaces.Remove(oneWorkspace);
         }
 
@@ -199,147 +196,220 @@ namespace Movie_Collection.ViewModel
             }
         }
 
-        private async void ShowAllMovies()
+        private void ShowAllMovies()
         {
-            await Dispatcher.InvokeAsync(()=>
+            Task.Run(() =>
             {
                 AllMoviesViewModel oneworkspace =
                     this.Workspaces.FirstOrDefault(vm => vm is AllMoviesViewModel)//является данным типом
                     as AllMoviesViewModel;//Для явного приведения
+
                 if (oneworkspace == null)
                 {
-                    oneworkspace = new AllMoviesViewModel(dataBaseWork, this);//////////////////////////!!!!!!!!!!!!!!!!!
-                    this.Workspaces.Add(oneworkspace);
+                    Dispatcher.Invoke(() => 
+                    {
+                        oneworkspace = new AllMoviesViewModel(dataBaseWork, this);//////////////////////////!!!!!!!!!!!!!!!!!
+                        this.Workspaces.Add(oneworkspace); 
+                    }
+                    );
                 }
-
-                this.SetActiveWorkspace(oneworkspace);
+                 Dispatcher.Invoke(() =>
+                {
+                    this.SetActiveWorkspace(oneworkspace);
+                }
+                );
             });
         }
 
         private void ShowAllStudios()
         {
-            AllStudiosViewModel oneworkspace =
-                this.Workspaces.FirstOrDefault(vm => vm is AllStudiosViewModel)//является данным типом
-                as AllStudiosViewModel;//Для явного приведения
-            if (oneworkspace == null)
+            Task.Run(() =>
             {
-                oneworkspace = new AllStudiosViewModel(dataBaseWork, this);//////
-                this.Workspaces.Add(oneworkspace);
-            }
+                AllStudiosViewModel oneworkspace =
+                       this.Workspaces.FirstOrDefault(vm => vm is AllStudiosViewModel)//является данным типом
+                       as AllStudiosViewModel;//Для явного приведения
+                Dispatcher.InvokeAsync(() =>
+                {
+                    if (oneworkspace == null)
+                    {
+                        oneworkspace = new AllStudiosViewModel(dataBaseWork, this);//////
+                        this.Workspaces.Add(oneworkspace);
+                    }
 
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
 
         private void ShowAllActors()
         {
-            AllActorsViewModel oneworkspace =
-                this.Workspaces.FirstOrDefault(vm => vm is AllActorsViewModel)//является данным типом
-                as AllActorsViewModel;//Для явного приведения
-            if (oneworkspace == null)
+            Task.Run(() =>
             {
-                oneworkspace = new AllActorsViewModel(dataBaseWork, this);///////
-                this.Workspaces.Add(oneworkspace);
-            }
+                AllActorsViewModel oneworkspace =
+                        this.Workspaces.FirstOrDefault(vm => vm is AllActorsViewModel)//является данным типом
+                        as AllActorsViewModel;//Для явного приведения
+                Dispatcher.InvokeAsync(() =>
+                {
+                    if (oneworkspace == null)
+                    {
+                        oneworkspace = new AllActorsViewModel(dataBaseWork, this);///////
+                        this.Workspaces.Add(oneworkspace);
+                    }
 
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
 
         private void ShowAllDirectors()
         {
-            AllDirectorsViewModel oneworkspace =
-                this.Workspaces.FirstOrDefault(vm => vm is AllDirectorsViewModel)//является данным типом
-                as AllDirectorsViewModel;//Для явного приведения
-            if (oneworkspace == null)
+            Task.Run(() =>
             {
-                oneworkspace = new AllDirectorsViewModel(dataBaseWork, this);//////
-                this.Workspaces.Add(oneworkspace);
-            }
+                AllDirectorsViewModel oneworkspace =
+                        this.Workspaces.FirstOrDefault(vm => vm is AllDirectorsViewModel)//является данным типом
+                        as AllDirectorsViewModel;//Для явного приведения
+                Dispatcher.InvokeAsync(() =>
+                {
+                    if (oneworkspace == null)
+                    {
+                        oneworkspace = new AllDirectorsViewModel(dataBaseWork, this);//////
+                        this.Workspaces.Add(oneworkspace);
+                    }
 
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
 
         private void ShowAllGenres()
         {
-            AllGenresViewModel oneworkspace =
-                this.Workspaces.FirstOrDefault(vm => vm is AllGenresViewModel)//является данным типом
-                as AllGenresViewModel;//Для явного приведения
-            if (oneworkspace == null)
+            Task.Run(() =>
             {
-                oneworkspace = new AllGenresViewModel(dataBaseWork);////
-                this.Workspaces.Add(oneworkspace);
-            }
+                AllGenresViewModel oneworkspace =
+                    this.Workspaces.FirstOrDefault(vm => vm is AllGenresViewModel)//является данным типом
+                    as AllGenresViewModel;//Для явного приведения
+                Dispatcher.InvokeAsync(() =>
+                {
+                    if (oneworkspace == null)
+                    {
+                        oneworkspace = new AllGenresViewModel(dataBaseWork);////
+                        this.Workspaces.Add(oneworkspace);
+                    }
 
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
 
-        private void ShowAddMovie()
+        //TO DO
+        private void ShowAddMovie()////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
-            AddMovieViewModel oneworkspace = new AddMovieViewModel(dataBaseWork);/////
+            Task.Run(() =>
+            {
+                AddMovieViewModel oneworkspace = new AddMovieViewModel(dataBaseWork);/////
+                Dispatcher.InvokeAsync(() =>
+                {
+                    this.Workspaces.Add(oneworkspace);
 
-            this.Workspaces.Add(oneworkspace);
-
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
 
         private void ShowAddStudio()
         {
-            AddStudioViewModel oneworkspace = new AddStudioViewModel(dataBaseWork);//////
+            Task.Run(() =>
+            {
+                AddStudioViewModel oneworkspace = new AddStudioViewModel(dataBaseWork);//////
+                Dispatcher.InvokeAsync(() =>
+                {
+                    this.Workspaces.Add(oneworkspace);
 
-            this.Workspaces.Add(oneworkspace);
-
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
 
         private void ShowAddActor()
         {
-            AddActorViewModel oneworkspace = new AddActorViewModel(dataBaseWork);//////
+            Task.Run(() =>
+            {
+                AddActorViewModel oneworkspace = new AddActorViewModel(dataBaseWork);//////
+                Dispatcher.InvokeAsync(() =>
+                {    
+                    this.Workspaces.Add(oneworkspace);
 
-            this.Workspaces.Add(oneworkspace);
-
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
 
         private void ShowAddDirector()
         {
-            AddDirectorViewModel oneworkspace = new AddDirectorViewModel(dataBaseWork);/////
+            Task.Run(() =>
+            {
+                AddDirectorViewModel oneworkspace = new AddDirectorViewModel(dataBaseWork);/////
+                Dispatcher.InvokeAsync(() =>
+                {
+                    this.Workspaces.Add(oneworkspace);
 
-            this.Workspaces.Add(oneworkspace);
-
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
         #endregion
 
         public void ShowEditMovie(MovieViewModel movieViewModel)
         {
-            AddMovieViewModel oneworkspace = new AddMovieViewModel(dataBaseWork, movieViewModel);
+            Task.Run(() =>
+            {
+                AddMovieViewModel oneworkspace = new AddMovieViewModel(dataBaseWork, movieViewModel);
+                Dispatcher.InvokeAsync(() =>
+                {
+                    this.Workspaces.Add(oneworkspace);
 
-            this.Workspaces.Add(oneworkspace);
-
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
         public void ShowEditActor(ActorViewModel actorViewModel)
         {
-            AddActorViewModel oneworkspace = new AddActorViewModel(dataBaseWork, actorViewModel);
+            Task.Run(() =>
+            {
+                AddActorViewModel oneworkspace = new AddActorViewModel(dataBaseWork, actorViewModel);
+                Dispatcher.InvokeAsync(() =>
+                {
+                    this.Workspaces.Add(oneworkspace);
 
-            this.Workspaces.Add(oneworkspace);
-
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
         public void ShowEditDirector(DirectorViewModel directorViewModel)
         {
-            AddDirectorViewModel oneworkspace = new AddDirectorViewModel(dataBaseWork, directorViewModel);
+            Task.Run(() =>
+            {
+                AddDirectorViewModel oneworkspace = new AddDirectorViewModel(dataBaseWork, directorViewModel);
+                Dispatcher.InvokeAsync(() =>
+                {
+                    this.Workspaces.Add(oneworkspace);
 
-            this.Workspaces.Add(oneworkspace);
-
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
         public void ShowEditStudio(StudioViewModel studioViewModel)
         {
-            AddStudioViewModel oneworkspace = new AddStudioViewModel(dataBaseWork, studioViewModel);
+            Task.Run(() =>
+            {
+                AddStudioViewModel oneworkspace = new AddStudioViewModel(dataBaseWork, studioViewModel);
+                Dispatcher.InvokeAsync(() =>
+                {
+                    this.Workspaces.Add(oneworkspace);
 
-            this.Workspaces.Add(oneworkspace);
-
-            this.SetActiveWorkspace(oneworkspace);
+                    this.SetActiveWorkspace(oneworkspace);
+                });
+            });
         }
         #region Title
         //public string Title { get; set; } = "Коллекция фильмов";

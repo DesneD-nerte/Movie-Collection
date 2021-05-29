@@ -68,7 +68,7 @@
                 </intr:EventTrigger>
             </intr:Interaction.Triggers>
         </TextBox>
-        
+
         <!--ItemContainerStyle="{StaticResource MovieItemStyle}"-->
         <DataGrid x:Name="MainDataGrid" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1"
                   MaxHeight="350"
@@ -88,8 +88,9 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"  
-                  Margin="10,10,10,102"
+        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"
+                  IsReadOnly="True"
+                  Margin="10,10,10,0"
                   MaxHeight="220"
                   DataContext="{Binding SelectedStudio}"
                   ItemsSource="{Binding Movies}"
@@ -98,13 +99,13 @@
                   GridLinesVisibility="All"
                   CanUserResizeColumns="False"
                   SelectionUnit="FullRow"
-                  SelectionMode="Single" >
+                  SelectionMode="Single" VerticalAlignment="Top" >
             <DataGrid.Columns >
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Название" Binding="{Binding Name}"/>
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Продолжительность" Binding="{Binding Duration}"/>
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Количество Серий" Binding="{Binding CountOfSeries}"/>
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Дата выхода" Binding="{Binding Release}"/>
-                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Накопитель" Binding="{Binding StorageName}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Накопитель" Binding="{Binding Storage.Name}"/>
             </DataGrid.Columns>
         </DataGrid>
 

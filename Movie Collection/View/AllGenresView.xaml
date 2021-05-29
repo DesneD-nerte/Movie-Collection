@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Movie_Collection.View"
+             xmlns:local="clr-namespace:Movie_Collection.View" 
+             xmlns:intr="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -39,7 +40,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Background="#FF191919">
         <Grid.RowDefinitions>
             <RowDefinition Height="37*"/>
             <RowDefinition Height="71*"/>
@@ -60,11 +61,17 @@
                  Width="160"
                  TextWrapping="Wrap"
                  Text="{Binding SearchGenre, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 Height="40"
-                 />
+                 Height="40">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="TextChanged">
+                    <intr:InvokeCommandAction Command="{Binding FindGenreCommand}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
+        </TextBox>
 
         <!--ItemContainerStyle="{StaticResource MovieItemStyle}"-->
-        <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1"
+        <DataGrid x:Name="MainDataGrid" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1"
+                  IsReadOnly="True"
                   Margin="10,10,9,19"
                   MaxHeight="300"
                   ItemsSource="{Binding Genres}"
@@ -73,15 +80,16 @@
                   VerticalGridLinesBrush="DarkGray"
                   GridLinesVisibility="All"
                   CanUserResizeColumns="False"
-                  SelectionUnit="FullRow">
+                  SelectionUnit="FullRow" SelectionChanged="MainDataGrid_SelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Название" Binding="{Binding Name}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Название" Binding="{Binding Name}"/>
             </DataGrid.Columns>
         </DataGrid>
 
-        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3"  
-                  Margin="10,10,10,10"
-                  MaxHeight="220"
+        <DataGrid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3"
+                  IsReadOnly="True"
+                  Margin="10,10,10,0"
+                  MaxHeight="300"
                   DataContext="{Binding SelectedGenre}"
                   ItemsSource="{Binding Movies}"
                   AutoGenerateColumns="False"
@@ -89,13 +97,13 @@
                   GridLinesVisibility="All"
                   CanUserResizeColumns="False"
                   SelectionUnit="FullRow"
-                  SelectionMode="Single" >
+                  SelectionMode="Single" VerticalAlignment="Top" >
             <DataGrid.Columns >
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Название" Binding="{Binding Name}"/>
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Продолжительность" Binding="{Binding Duration}"/>
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Количество Серий" Binding="{Binding CountOfSeries}"/>
                 <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Дата выхода" Binding="{Binding Release}"/>
-                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Накопитель" Binding="{Binding StorageName}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}" Header="Накопитель" Binding="{Binding Storage.Name}"/>
             </DataGrid.Columns>
         </DataGrid>
 

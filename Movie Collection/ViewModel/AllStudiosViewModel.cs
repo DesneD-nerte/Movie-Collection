@@ -36,10 +36,10 @@ namespace Movie_Collection.ViewModel
             GetAllStudios(mainWindowViewModel);
         }
 
-        private void GetAllStudios(MainWindowViewModel mainWindowViewModel = null)
+        private async void GetAllStudios(MainWindowViewModel mainWindowViewModel = null)
         {
             Studios = new ObservableCollection<StudioViewModel>();
-            foreach (var studio in dataBaseStudios.GetStudios())
+            foreach (var studio in await dataBaseStudios.GetStudios())
             {
                 var newStudio = new StudioViewModel(studio, mainWindowViewModel);
 

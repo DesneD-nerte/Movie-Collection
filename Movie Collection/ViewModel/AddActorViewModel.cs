@@ -76,9 +76,9 @@ namespace Movie_Collection.ViewModel
             CreateNewCountries();
         }
 
-        private void CreateNewCountries()
+        private async void CreateNewCountries()
         {
-            List<CountryViewModel> countries = (from db in dataBaseAddActor.GetCountries() select new CountryViewModel(db)).ToList();
+            List<CountryViewModel> countries = (from db in await dataBaseAddActor.GetCountries() select new CountryViewModel(db)).ToList();
             AllCountry = new ObservableCollection<CountryViewModel>(countries);
         }
     }

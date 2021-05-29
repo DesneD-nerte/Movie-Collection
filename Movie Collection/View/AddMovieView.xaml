@@ -78,7 +78,7 @@
     </UserControl.Resources>
 
     <Grid Width="1097" Height="1500">
-        <Grid.Resources>
+        <!--<Grid.Resources>
             <DataTemplate DataType="{x:Type ValidationError}">
                 <TextBlock 
                     FontStyle="Italic"
@@ -88,7 +88,7 @@
                     Text="{Binding Path=ErrorContent}" 
                 />
             </DataTemplate>
-        </Grid.Resources>
+        </Grid.Resources>-->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.6*"/>
             <ColumnDefinition Width="1*"/>
@@ -102,9 +102,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="0.75*"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="0.6*"/>
             <RowDefinition Height="0.4*"/>
             <RowDefinition Height="0.4*"/>
-            <RowDefinition/>
             <RowDefinition Height="0.4*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="0.4*"/>
@@ -119,6 +119,9 @@
         <Label Content="Название:" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
         <TextBox Grid.Column="1" Grid.ColumnSpan="6"
+                 VerticalContentAlignment="Center"
+                 TextWrapping="Wrap"
+                 FontSize="25"
                  Margin="20,20,20,20"
                  DataContext="{Binding Movie}"
                  Text="{Binding Name, Mode=TwoWay}">
@@ -127,60 +130,113 @@
         <Label Content="Описание:" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"/>
 
         <TextBox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="6"
+                 TextWrapping="Wrap"
+                 FontSize="18"
                  Margin="20,2"
                  DataContext="{Binding Movie}"
                  Text="{Binding Description, Mode=TwoWay}"/>
 
-        <Label Content="Количество серий:"
+        <!--<Label Content="Количество серий:"
+               VerticalContentAlignment="Center"
+               
+               FontSize="18" 
                Grid.Row="2" Grid.Column="1"
                VerticalAlignment="Center"
                Margin="20,0,0,0">
-        </Label>
+        </Label>-->
+
+        <TextBlock
+            Text="Количество серий:"
+               VerticalAlignment="Center"
+               TextWrapping="Wrap"
+               FontSize="18" 
+               Grid.Row="2" Grid.Column="1"
+               Margin="20,0,0,0">
+        </TextBlock>
 
         <TextBox Grid.Column="2" Grid.Row="2"
+                 FontSize="18"
+                 HorizontalContentAlignment="Left"
+                 VerticalContentAlignment="Center"
                  DataContext="{Binding Movie}"
-                 Text="{Binding CountOfSeries, Mode=TwoWay}">
+                 Margin="0,20,0,20">
+            <TextBox.Text>
+                <Binding Path="CountOfSeries">
+                    <Binding.ValidationRules>
+                        <DataErrorValidationRule />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
         </TextBox>
 
-        <Label Content="Длительность:"
+        <!--<Label Content="Длительность:"
                Grid.Row="2" Grid.Column="3"
                VerticalAlignment="Center"
                Margin="20,0,0,0">
-        </Label>
+        </Label>-->
 
-        <TextBox Grid.Column="4" Grid.Row="2"
+        <TextBlock Text="Длительность:"
+               Grid.Row="2" Grid.Column="3"
+               FontSize="18"
+               VerticalAlignment="Center"
+               Margin="20,0,0,0">
+        </TextBlock>
+
+        <TextBox Grid.Column="3" Grid.Row="2"
+                 FontSize="18"
+                 HorizontalContentAlignment="Left"
+                 VerticalContentAlignment="Center"
                  DataContext="{Binding Movie}"
-                 Text="{Binding Duration, Mode=TwoWay}">
-        </TextBox>
+                 Text="{Binding Duration, Mode=TwoWay}" Grid.ColumnSpan="3" Margin="152,20,152,20"/>
 
-        <Label Content="Релиз:"
+        <!--<Label Content="Релиз:"
                Grid.Row="2" Grid.Column="5"
                VerticalAlignment="Center"
                Margin="20,0,0,0">
-        </Label>
+        </Label>-->
 
-        <TextBox Grid.Column="6" Grid.Row="2"
+        <TextBlock Text="Релиз:"
+               Grid.Row="2" Grid.Column="5"
+               VerticalAlignment="Center"
+               Margin="20,0,0,0"
+               FontSize="18">
+        </TextBlock>
+        
+        <TextBox Grid.Column="5" Grid.Row="2"
+                 FontSize="18"
+                 HorizontalContentAlignment="Left"
+                 VerticalContentAlignment="Center"
                  DataContext="{Binding Movie}"
-                 Text="{Binding Release, Mode=TwoWay}">
-        </TextBox>
-        <Label Content="Список Накопителей:"
-               Grid.Row="3" Grid.Column="4"
+                 Text="{Binding Release, Mode=TwoWay}" Grid.ColumnSpan="3" Margin="152,20,91,20"/>
+        <!--abel Content="Список Накопителей:"
+               FontSize="18"
+               Grid.Row="3" Grid.Column="3"
                VerticalAlignment="Bottom"
-               HorizontalAlignment="Center"/>
+               HorizontalAlignment="Center"/>-->
+
+            <TextBlock Text="Список Накопителей:"
+                   TextWrapping="Wrap"
+                   FontSize="18"
+                   Grid.Row="3" Grid.Column="3"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center">
+                
+            </TextBlock>
 
         <ComboBox
-                  Grid.Column="4"
-                  HorizontalAlignment="Left"
-                  Margin="10,37,0,0"
+                  Grid.Column="3"
                   Grid.Row="4"
-                  VerticalAlignment="Top"
+                  HorizontalAlignment="Center"
+                  Margin="0,0,0,0"
+                  VerticalAlignment="Center"
                   Width="120"
                   ItemsSource="{Binding AllStorages}"
                   SelectedItem="{Binding SelectedStorage, Mode=TwoWay}"
+            IsSynchronizedWithCurrentItem="True"
                   DisplayMemberPath="Name"/>
-        <TextBlock Grid.Column="5" HorizontalAlignment="Center" Margin="0,59,0,0" Grid.Row="4" Text="{Binding SelectedStorage.Name, Mode=TwoWay}" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock Grid.Column="5" HorizontalAlignment="Center" Grid.Row="4" Text="{Binding SelectedStorage.Name, Mode=TwoWay}" TextWrapping="Wrap" VerticalAlignment="Top"/>
 
-        <Label Content="Список студий:" Grid.Row="5" Grid.Column="1"/>
+        <Label Content="Список студий:" VerticalContentAlignment="Center" FontSize="18" Grid.Row="5" Grid.Column="1"/>
         <ListView Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="1"
                   SelectedItem="{Binding SelectedStudio, Mode=TwoWay}"
                   ItemsSource="{Binding AllStudios}">
@@ -192,24 +248,30 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Название" DisplayMemberBinding="{Binding Name}"/>
-                    <GridViewColumn Header="Страна" DisplayMemberBinding="{Binding Country}"/>
+                    <GridViewColumn Header="Страна" DisplayMemberBinding="{Binding Country.Name}"/>
                 </GridView>
             </ListView.View>
         </ListView>
 
-        <Label Content="Студии фильма:" Grid.Row="5" Grid.Column="4"/>
+        <Label Content="Студии фильма:" VerticalContentAlignment="Center" FontSize="18" Grid.Row="5" Grid.Column="4"/>
         <ListView Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="2"
                   DataContext="{Binding Movie}"
-                  ItemsSource="{Binding Studios}">
+                  ItemsSource="{Binding Studios}"
+                  SelectedItem="{Binding SelectedStudio}">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="MouseDoubleClick">
+                    <intr:InvokeCommandAction Command="{Binding DoubleClickDeleteStudiosCommand}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Название" DisplayMemberBinding="{Binding Name}"/>
-                    <GridViewColumn Header="Страна" DisplayMemberBinding="{Binding Country}"/>
+                    <GridViewColumn Header="Страна" DisplayMemberBinding="{Binding Country.Name}"/>
                 </GridView>
             </ListView.View>
         </ListView>
 
-        <Label Content="Список Актеров:" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Margin="0,0,0,0">
+        <Label Content="Список Актеров:" VerticalContentAlignment="Center" FontSize="18"  Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Margin="0,0,0,0">
         </Label>
         <ListView Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Margin="0,0,20,0"
                   SelectedItem="{Binding SelectedActor}"
@@ -249,11 +311,17 @@
             </ListView.View>
         </ListView>
 
-        <Label Content="Актеры фильма:" Grid.Row="7" Grid.Column="4" Margin="0,0,0,0">
+        <Label Content="Актеры фильма:" VerticalContentAlignment="Center" FontSize="18"  Grid.Row="7" Grid.Column="4" Margin="0,0,0,0">
         </Label>
         <ListView Grid.Row="8" Grid.Column="4" Grid.ColumnSpan="3" Margin="0,0,20,0"
                   DataContext="{Binding Movie}"
-                  ItemsSource="{Binding Actors}">
+                  ItemsSource="{Binding Actors}"
+                  SelectedItem="{Binding SelectedActor}">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="MouseDoubleClick">
+                    <intr:InvokeCommandAction Command="{Binding DoubleClickDeleteActorsCommand}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
             <ListView.View>
                 <GridView>
                     <GridViewColumn 
@@ -284,7 +352,7 @@
             </ListView.View>
         </ListView>
 
-        <Label Content="Список режиссеров:" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="1">
+        <Label Content="Список режиссеров:" VerticalContentAlignment="Center" FontSize="18"  Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2">
         </Label>
         <ListView Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="3" Margin="0,0,20,0"
                   SelectedItem="{Binding SelectedDirector}"
@@ -324,10 +392,16 @@
             </ListView.View>
         </ListView>
 
-        <Label Content="Режиссеры фильма:" Grid.Row="9" Grid.Column="4"/>
+        <Label Content="Режиссеры фильма:" VerticalContentAlignment="Center" FontSize="18"  Grid.Row="9" Grid.Column="4" Grid.ColumnSpan="2"/>
         <ListView Grid.Row="10" Grid.Column="4" Grid.ColumnSpan="3" Margin="0,0,20,0"
                   DataContext="{Binding Movie}"
-                  ItemsSource="{Binding Directors}">
+                  ItemsSource="{Binding Directors}"
+                  SelectedItem="{Binding SelectedDirector}">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="MouseDoubleClick">
+                    <intr:InvokeCommandAction Command="{Binding DoubleClickDeleteDirectorsCommand}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
             <ListView.View>
                 <GridView>
                     <GridViewColumn 
@@ -358,7 +432,7 @@
             </ListView.View>
         </ListView>
 
-        <Label Content="Список Жанров:" Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="1" >
+        <Label Content="Список Жанров:" VerticalContentAlignment="Center" FontSize="18"  Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="1" >
         </Label>
         <ListView Grid.Row="12" Grid.ColumnSpan="3" Margin="0,0,20,0" Grid.Column="1"
                   SelectedItem="{Binding SelectedGenre}"
@@ -375,11 +449,17 @@
             </ListView.View>
         </ListView>
 
-        <Label Content="Жанры фильма:" Grid.Row="11" Grid.Column="4">
+        <Label Content="Жанры фильма:" VerticalContentAlignment="Center" FontSize="18"  Grid.Row="11" Grid.Column="4">
         </Label>
         <ListView Grid.Row="12" Grid.Column="4" Grid.ColumnSpan="3" Margin="0,0,20,0"
                   DataContext="{Binding Movie}"
-                  ItemsSource="{Binding Genres}">
+                  ItemsSource="{Binding Genres}"
+                  SelectedItem="{Binding SelectedGenre}">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="MouseDoubleClick">
+                    <intr:InvokeCommandAction Command="{Binding DoubleClickDeleteGenresCommand}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Название" DisplayMemberBinding ="{Binding Name}"/>

@@ -4,13 +4,15 @@ using Movie_Collection.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
-    class AddMovieViewModel : WorkspaceViewModel
+    class AddMovieViewModel : WorkspaceViewModel, IDataErrorInfo
     {
         MovieViewModel movie;
 
@@ -83,12 +85,13 @@ namespace Movie_Collection.ViewModel
         public ObservableCollection<GenreViewModel> AllGenres { get; private set; }
         public ObservableCollection<StorageViewModel> AllStorages { get; private set; }
 
-        DataBaseWork dataBaseAddMovie;
+        readonly DataBaseWork dataBaseAddMovie;
 
         RelayCommand doubleClickStudiosCommand;
         RelayCommand doubleClickActorsCommand;
         RelayCommand doubleClickDirectorsCommand;
         RelayCommand doubleClickGenresCommand;
+
 
         RelayCommand addMovieCommand;
 
@@ -97,13 +100,16 @@ namespace Movie_Collection.ViewModel
         {
             get
             {
-                if(doubleClickStudiosCommand == null)
+                if (doubleClickStudiosCommand == null)
                 {
                     doubleClickStudiosCommand = new RelayCommand(param =>
                         {
-                            if (!movie.Studios.Contains(SelectedStudio))
+                            if (SelectedStudio != null)
                             {
-                                Movie.Studios.Add(SelectedStudio);
+                                if (!movie.Studios.Contains(SelectedStudio))
+                                {
+                                    Movie.Studios.Add(SelectedStudio);
+                                }
                             }
                         }
                     );
@@ -119,9 +125,12 @@ namespace Movie_Collection.ViewModel
                 {
                     doubleClickActorsCommand = new RelayCommand(param =>
                     {
-                        if (!Movie.Actors.Contains(SelectedActor))
+                        if (SelectedActor != null)
                         {
-                            Movie.Actors.Add(SelectedActor);
+                            if (!Movie.Actors.Contains(SelectedActor))
+                            {
+                                Movie.Actors.Add(SelectedActor);
+                            }
                         }
                     }
                     );
@@ -137,9 +146,12 @@ namespace Movie_Collection.ViewModel
                 {
                     doubleClickDirectorsCommand = new RelayCommand(param =>
                     {
-                        if (!Movie.Directors.Contains(SelectedDirector))
+                        if (SelectedDirector != null)
                         {
-                            Movie.Directors.Add(SelectedDirector);
+                            if (!Movie.Directors.Contains(SelectedDirector))
+                            {
+                                Movie.Directors.Add(SelectedDirector);
+                            }
                         }
                     }
                     );
@@ -155,9 +167,12 @@ namespace Movie_Collection.ViewModel
                 {
                     doubleClickGenresCommand = new RelayCommand(param =>
                     {
-                        if (!Movie.Genres.Contains(SelectedGenre))
+                        if (SelectedGenre != null)
                         {
-                            Movie.Genres.Add(SelectedGenre);
+                            if (!Movie.Genres.Contains(SelectedGenre))
+                            {
+                                Movie.Genres.Add(SelectedGenre);
+                            }
                         }
                     }
                     );
@@ -179,59 +194,104 @@ namespace Movie_Collection.ViewModel
             }
         }
 
-        /// <summary>
-        /// Начинается процесс создания нового фильма с помощью обращения в базу данных
-        /// </summary>
-        /// <param name="dataBase"></param>
+        public string Error
+        {
+            get 
+            { 
+                return (movie as IDataErrorInfo).Error; 
+            }
+        }
+
+        public string this[string propertyName]
+        {
+            get
+            {
+                string error = null;
+
+                if (propertyName == "CustomerType")
+                {
+                    //error = this.ValidateCustomerType();
+                }
+                else
+                {
+                    error = (movie as IDataErrorInfo)[propertyName];
+                }
+                //CommandManager.InvalidateRequerySuggested();
+
+                return error;
+            }
+        }
+
         public AddMovieViewModel(DataBaseWork dataBase, MovieViewModel movieViewModel = null)
         {
-            movie = movieViewModel != null ? movieViewModel : new MovieViewModel();
+            movie = movieViewModel ?? new MovieViewModel();
 
             base.DisplayName = Strings.AddMovieViewModel_DisplayName;
 
             dataBaseAddMovie = dataBase;
             FullData();
-            AssignSelectedEntities(Movie);
+
+            if (movieViewModel != null)
+            {
+                AssignSelectedEntities(Movie);
+            }
         }
 
         private void AssignSelectedEntities(MovieViewModel movie)
         {
-            selectedStorage = movie.Storage;
+             selectedStorage = AllStorages.First(x => x.ID == movie.Storage.ID);
         }
 
         private void FullData()
         {
-            CreateNewActors();
-            CreateNewDirectors();
-            CreateNewStudios();
-            CreateNewGenres();
-            CreateNewStorages();
+            var task1 = CreateNewActors();
+            var task2 = CreateNewDirectors();
+            var task3 = CreateNewStudios();
+            var task4 = CreateNewGenres();
+            var task5 = CreateNewStorages();
+
+            Task.WaitAll(task1, task2, task3, task4, task5);
         }
 
-        private void CreateNewActors()
+        private Task CreateNewActors()
         {
-            List<ActorViewModel> actors = (from db in dataBaseAddMovie.GetActors() select new ActorViewModel(db)).ToList();
-            AllActors = new ObservableCollection<ActorViewModel>(actors);
+            return Task.Run(async() =>
+            {
+                List<ActorViewModel> actors = (from db in await dataBaseAddMovie.GetActors() select new ActorViewModel(db)).ToList();
+                AllActors = new ObservableCollection<ActorViewModel>(actors);
+            });
         }
-        private void CreateNewDirectors()
+        private Task CreateNewDirectors()
         {
-            List<DirectorViewModel> directors = (from db in dataBaseAddMovie.GetDirectors() select new DirectorViewModel(db)).ToList();
-            AllDirectors = new ObservableCollection<DirectorViewModel>(directors);
+            return Task.Run(async () =>
+            {
+                List<DirectorViewModel> directors = (from db in await dataBaseAddMovie.GetDirectors() select new DirectorViewModel(db)).ToList();
+                AllDirectors = new ObservableCollection<DirectorViewModel>(directors);
+            });
         }
-        private void CreateNewStudios()
+        private Task CreateNewStudios()
         {
-            List<StudioViewModel> studios = (from db in dataBaseAddMovie.GetStudios() select new StudioViewModel(db)).ToList();
-            AllStudios = new ObservableCollection<StudioViewModel>(studios);
+            return Task.Run(async () =>
+            {
+                List<StudioViewModel> studios = (from db in await dataBaseAddMovie.GetStudios() select new StudioViewModel(db)).ToList();
+                AllStudios = new ObservableCollection<StudioViewModel>(studios);
+            });
         }
-        private void CreateNewGenres()
+        private Task CreateNewGenres()
         {
-            List<GenreViewModel> genres = (from db in dataBaseAddMovie.GetGenres() select new GenreViewModel(db)).ToList();
-            AllGenres = new ObservableCollection<GenreViewModel>(genres);
+            return Task.Run(async () =>
+            {
+                List<GenreViewModel> genres = (from db in await dataBaseAddMovie.GetGenres() select new GenreViewModel(db)).ToList();
+                AllGenres = new ObservableCollection<GenreViewModel>(genres);
+            });
         }
-        private void CreateNewStorages()
+        private Task CreateNewStorages()
         {
-            List<StorageViewModel> storages = (from db in dataBaseAddMovie.GetStorages() select new StorageViewModel(db)).ToList();
-            AllStorages = new ObservableCollection<StorageViewModel>(storages);
+            return Task.Run(async() =>
+            {
+                List<StorageViewModel> storages = (from db in await dataBaseAddMovie.GetStorages() select new StorageViewModel(db)).ToList();
+                AllStorages = new ObservableCollection<StorageViewModel>(storages);
+            });
         }
     }
 }
