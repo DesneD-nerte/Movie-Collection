@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
@@ -35,10 +36,10 @@ namespace Movie_Collection.ViewModel
             GetAllDirectors(mainWindowViewModel);
         }
 
-        private void GetAllDirectors(MainWindowViewModel mainWindowViewModel = null)
+        private async void GetAllDirectors(MainWindowViewModel mainWindowViewModel = null)
         {
             Directors = new ObservableCollection<DirectorViewModel>();
-            foreach (var director in dataBaseDirectors.GetDirectors())
+            foreach (var director in await dataBaseDirectors.GetDirectors())
             {
                 var newDirector = new DirectorViewModel(director, mainWindowViewModel);
 
@@ -47,6 +48,7 @@ namespace Movie_Collection.ViewModel
         }
 
         RelayCommand deleteCommand;
+        RelayCommand findDirectorCommand;
 
         public ICommand DeleteCommand
         {
@@ -64,6 +66,34 @@ namespace Movie_Collection.ViewModel
                     });
                 }
                 return deleteCommand;
+            }
+        }
+
+        public ICommand FindDirectorCommand
+        {
+            get
+            {
+                if (findDirectorCommand == null)
+                {
+                    findDirectorCommand = new RelayCommand(param =>
+                    {
+                        try
+                        {
+                            SelectedDirector = Directors.First(x => x.Name.Contains(SearchDirector));
+                        }
+                        catch { }
+                    });
+                }
+                return findDirectorCommand;
+            }
+        }
+        string searchDirector = "Поиск";
+        public string SearchDirector
+        {
+            get => searchDirector;
+            set
+            {
+                searchDirector = value;
             }
         }
     }

@@ -21,30 +21,33 @@
             </Menu>
         </StackPanel>-->
 
-        <Grid Background="#FF200046">
+        <!--<Grid Background="#FF200046">-->
+        <Grid Background="#FF040404">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="264*"/>
+                <ColumnDefinition Width="427*"/>
                 <ColumnDefinition Width="7.5"/>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="108*"/>
-                <ColumnDefinition Width="110*"/>
-                <ColumnDefinition Width="111*"/>
-                <ColumnDefinition Width="110*"/>
-                <ColumnDefinition Width="75*"/>
+                <ColumnDefinition Width="32*"/>
+                <ColumnDefinition Width="231*"/>
+                <ColumnDefinition Width="235*"/>
+                <ColumnDefinition Width="235*"/>
+                <ColumnDefinition Width="237*"/>
+                <ColumnDefinition Width="235*"/>
+                <ColumnDefinition Width="20*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="115*"/>
                 <RowDefinition  Height="12*"/>
-                <RowDefinition Height="661*"/>
+                <RowDefinition Height="64*"/>
+                <RowDefinition Height="597*"/>
                 <RowDefinition Height="96*"/>
             </Grid.RowDefinitions>
 
-            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.Column="1" Background="Black" Margin="3,0,3,0" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="4" >
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.Column="1" Background="Black" Margin="3,0,3,0" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="5" >
             </Separator>
 
             <Image Source="/Images/MainIcon.png"
                    VerticalAlignment="Top"
-                   HorizontalAlignment="Center" Margin="0,10,0,0">
+                   HorizontalAlignment="Center" Margin="0,10,0,0" Height="105" Width="399">
             </Image>
 
             <Button Command="{Binding Path=AboutProgramm}" Style="{DynamicResource MenuButton}" Grid.Column="3" Margin="3,18,9,18" Content="О программе"/>
@@ -52,13 +55,13 @@
             <Button Command="{Binding Path=ReferenceProgramm}" Style="{DynamicResource MenuButton}" Grid.Column="5" Margin="7,18,8,18" Content="Справка"/>
             <Button Command="{Binding Path=ExitProgramm}" Style="{DynamicResource MenuButton}" Grid.Column="6" Margin="8,18,5,18" Content="Выход"/>
 
-            <Separator Grid.Row="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" VerticalAlignment="Center" Background="Black" Grid.ColumnSpan="8" Margin="0,0,4,0" Height="1" />
+            <Separator Grid.Row="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" VerticalAlignment="Center" Background="Black" Grid.ColumnSpan="9" Margin="0,0,4,0" Height="1" />
 
-            <Border Grid.Row="2"
-                    Background="#FF4E3B64"
-                    CornerRadius="10" Margin="15,10,10,18">
+            <Border Grid.Row="1"
+                    Background="#FF191919"
+                    CornerRadius="10" Margin="15,12,10,0" Grid.RowSpan="3">
                 <HeaderedContentControl
-                    Header="Control Panel"
+                    Header="Команды"
                     FontFamily="Roboto"
                     FontSize="18"
                     FontWeight="Medium"
@@ -67,18 +70,42 @@
                     ContentTemplate="{StaticResource CommandsTemplate}"/>
             </Border>
 
-            <ScrollViewer Grid.Column="2" Grid.ColumnSpan="6" Grid.Row="2">
-                <Border  
-                    Background="#FF4E3B64"
-                    CornerRadius="10" Margin="10,10,10,15" Grid.RowSpan="2">
+
+            <Border Background="White" Grid.Column="2" Grid.ColumnSpan="6" Grid.Row="2"
+                    CornerRadius="10"
+                    Margin="0,0,0,0">
+                <TextBlock Text="Рабочее пространство"
+                           Foreground="Black"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           FontSize="25"
+                           FontFamily="Roboto"
+                           FontWeight="Bold"/>
+            </Border>
+
+            <ScrollViewer Grid.ColumnSpan="7" Grid.Row="3" Grid.Column="2"
+                          Margin="0,5,0,0">
+                <Border CornerRadius="10"
+                        Background="#FF191919">
+                    <HeaderedContentControl
+                    Content="{Binding Path=Workspaces}"
+                    ContentTemplate="{StaticResource WorkspacesTemplate}">
+                    </HeaderedContentControl>
+                </Border>
+            </ScrollViewer>
+
+            <!--<ScrollViewer Grid.Column="2" Grid.ColumnSpan="6" Grid.Row="2">
+                <Border 
+                    Background="#FF191919"
+                    CornerRadius="10" Margin="10,0,10,0" Grid.RowSpan="2">
                 <HeaderedContentControl
                     Content="{Binding Path=Workspaces}"
                     ContentTemplate="{StaticResource WorkspacesTemplate}"
-                    Header="Workspaces"
+                    Header="Рабочее пространство"
                     Style="{StaticResource MainHCCStyle}">
                 </HeaderedContentControl>
                 </Border>
-            </ScrollViewer>
+            </ScrollViewer>-->
         </Grid>
     </DockPanel>
 </Window>

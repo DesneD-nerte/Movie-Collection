@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,791 +11,1177 @@ namespace Movie_Collection.DataAccess
 {
     class DataBaseWork
     {
-        string databaseConnectionString;
+        readonly string databaseConnectionString;
         public DataBaseWork(string serverName)
         {
             databaseConnectionString = serverName;
         }
 
-        List<Movie> movies = new List<Movie>();
-        List<Actor> actors = new List<Actor>();
-        List<Director> directors = new List<Director>();
-        List<Studio> studios = new List<Studio>();
-        List<Genre> genres = new List<Genre>();
-        List<Storage> storages = new List<Storage>();
-        List<Country> countries = new List<Country>();
+        readonly List<Movie> movies = new List<Movie>();
+        readonly List<Actor> actors = new List<Actor>();
+        readonly List<Director> directors = new List<Director>();
+        readonly List<Studio> studios = new List<Studio>();
+        readonly List<Genre> genres = new List<Genre>();
+        readonly List<Storage> storages = new List<Storage>();
+        readonly List<Country> countries = new List<Country>();
+
+        readonly Dictionary<int, int> movie_Actors = new Dictionary<int, int>();
+        readonly Dictionary<int, int> movie_Directors = new Dictionary<int, int>();
+        readonly Dictionary<int, int> movie_Studios = new Dictionary<int, int>();
+        readonly Dictionary<int, int> movie_Genres = new Dictionary<int, int>();
 
         #region Загрузка всех фильмов, и всех сущностей к каждому фильму
-        private void LoadMovies()
+        private Task LoadMovies()
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT M.Id_movie, M.Name, M.Description, S.Id_storage, M.Duration, M.Number_series, M.Release, S.Name as 'StorageName' "+
-                               "FROM Movie M "+
-                                   "JOIN Storage S "+
-                                   "ON M.Id_storage = S.Id_storage";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while(sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    Movie movie = new Movie(
-                        Convert.ToInt32(sqlDataReader["Id_movie"]), sqlDataReader["Name"].ToString(), sqlDataReader["Description"].ToString(),
-                        new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]);
+                    string query = "SELECT M.Id_movie, M.Name, M.Description, S.Id_storage, M.Duration, M.Number_series, M.Release, S.Name as 'StorageName' " +
+                                   "FROM Movie M " +
+                                       "JOIN Storage S " +
+                                       "ON M.Id_storage = S.Id_storage";
 
-                    LoadMovieActors(movie);
-                    LoadMovieDirectors(movie);
-                    LoadMovieStudios(movie);
-                    LoadMovieGenres(movie);
-                    LoadMovieStorages(movie);
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    movies.Add(movie);
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        Movie movie = new Movie(
+                            Convert.ToInt32(sqlDataReader["Id_movie"]), sqlDataReader["Name"].ToString(), sqlDataReader["Description"].ToString(),
+                            new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]);
+
+                        LoadMovieItems(movie);
+
+                        movies.Add(movie);
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
                 }
-
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+            });
         }
 
-        private void LoadMovieActors(Movie movie)
+        private void LoadMovieItems(Movie movie)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            var Task1 = LoadMovieActors(movie);
+            var Task2 = LoadMovieDirectors(movie);
+            var Task3 = LoadMovieStudios(movie);
+            var Task4 = LoadMovieGenres(movie);
+            var Task5 = LoadMovieStorages(movie);
+
+            Task.WaitAll(Task1, Task2, Task3, Task4, Task5);
+        }
+
+        private Task LoadMovieActors(Movie movie)
+        {
+            return Task.Run(() =>
             {
-                string query = "SELECT Actor.Id_actor, Actor.Name, Actor.Surname, Actor.Patronym, Actor.Gender, Actor.Birthday, Country.Id_country, Country.Name AS 'CountryName' "+
-                                "FROM Movie "+
-                                    "JOIN Movie_Actor "+
-                                    "ON Movie.Id_movie = Movie_Actor.Id_movie "+
-                                    "LEFT JOIN Actor "+
-                                    "ON Actor.Id_actor = Movie_Actor.Id_actor "+
-                                    "LEFT JOIN Country "+
-                                    "ON Actor.Id_country = Country.Id_country "+
-                                $"WHERE Movie.[Name] = '{movie.Name}'";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    Actor actor = new Actor(
-                            Convert.ToInt32(sqlDataReader["Id_actor"]), sqlDataReader["Name"].ToString(), sqlDataReader["Surname"].ToString(),
+                    string query = "SELECT Actor.Id_actor, Actor.Name, Actor.Surname, Actor.Patronym, Actor.Gender, Actor.Birthday, Country.Id_country, Country.Name AS 'CountryName' " +
+                                    "FROM Movie " +
+                                        "JOIN Movie_Actor " +
+                                        "ON Movie.Id_movie = Movie_Actor.Id_movie " +
+                                        "LEFT JOIN Actor " +
+                                        "ON Actor.Id_actor = Movie_Actor.Id_actor " +
+                                        "LEFT JOIN Country " +
+                                        "ON Actor.Id_country = Country.Id_country " +
+                                    $"WHERE Movie.[Name] = '{movie.Name}'";
+
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        Actor actor = new Actor(
+                                Convert.ToInt32(sqlDataReader["Id_actor"]), sqlDataReader["Name"].ToString(), sqlDataReader["Surname"].ToString(),
+                                sqlDataReader["Patronym"].ToString(), sqlDataReader["Gender"].ToString(), null, new Country());
+
+                        if (sqlDataReader["Birthday"] != DBNull.Value)
+                        {
+                            actor.Birthday = (DateTime?)sqlDataReader["Birthday"];
+                        }
+                        if (sqlDataReader["Id_country"] != DBNull.Value && sqlDataReader["CountryName"] != DBNull.Value)
+                        {
+                            actor.Country = new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString());
+                        }
+
+                        movie.Actors.Add(actor);
+                    }
+
+                    sqlConnection.Close();
+                }
+            });
+        }
+
+        private Task LoadMovieDirectors(Movie movie)
+        {
+            return Task.Run(() =>
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "SELECT Director.Id_director, Director.Name, Director.Surname, Director.Patronym, Director.Gender, Director.Birthday, Country.Id_country, Country.Name  AS 'CountryName'" +
+                                   "FROM Movie " +
+                                       "JOIN Movie_Director " +
+                                       "ON Movie.Id_movie = Movie_Director.Id_movie " +
+                                       "LEFT JOIN Director " +
+                                       "ON Director.Id_director = Movie_Director.Id_director " +
+                                       "LEFT JOIN Country " +
+                                       "ON Director.Id_country = Country.Id_country " +
+                                   $"WHERE Movie.[Name] = '{movie.Name}'";
+
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        Director director = new Director(
+                            Convert.ToInt32(sqlDataReader["Id_director"]), sqlDataReader["Name"].ToString(), sqlDataReader["Surname"].ToString(),
                             sqlDataReader["Patronym"].ToString(), sqlDataReader["Gender"].ToString(), null, new Country());
 
-                    if (sqlDataReader["Birthday"] != DBNull.Value)
-                    {
-                        actor.Birthday = (DateTime?)sqlDataReader["Birthday"];
-                    }
-                    if (sqlDataReader["Id_country"] != DBNull.Value && sqlDataReader["CountryName"] != DBNull.Value)
-                    {
-                        actor.Country = new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString());
-                    }
+                        if (sqlDataReader["Birthday"] != DBNull.Value)
+                        {
+                            director.Birthday = (DateTime?)sqlDataReader["Birthday"];
+                        }
+                        if (sqlDataReader["Id_country"] != DBNull.Value && sqlDataReader["CountryName"] != DBNull.Value)
+                        {
+                            director.Country = new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString());
+                        }
 
-                    movie.Actors.Add(actor);
-                }
-
-                sqlConnection.Close();
-            }
-        }
-
-        private void LoadMovieDirectors(Movie movie)
-        {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
-            {
-                string query = "SELECT Director.Id_director, Director.Name, Director.Surname, Director.Patronym, Director.Gender, Director.Birthday, Country.Id_country, Country.Name  AS 'CountryName'" +
-                               "FROM Movie "+
-                                   "JOIN Movie_Director "+
-                                   "ON Movie.Id_movie = Movie_Director.Id_movie "+
-                                   "LEFT JOIN Director "+
-                                   "ON Director.Id_director = Movie_Director.Id_director "+
-                                   "LEFT JOIN Country "+
-                                   "ON Director.Id_country = Country.Id_country "+
-                               $"WHERE Movie.[Name] = '{movie.Name}'";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
-                {
-                    Director director = new Director(
-                        Convert.ToInt32(sqlDataReader["Id_director"]), sqlDataReader["Name"].ToString(), sqlDataReader["Surname"].ToString(),
-                        sqlDataReader["Patronym"].ToString(), sqlDataReader["Gender"].ToString(), null, new Country());
-
-                    if (sqlDataReader["Birthday"] != DBNull.Value)
-                    {
-                        director.Birthday = (DateTime?)sqlDataReader["Birthday"];
-                    }
-                    if (sqlDataReader["Id_country"] != DBNull.Value && sqlDataReader["CountryName"] != DBNull.Value)
-                    {
-                        director.Country = new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString());
+                        movie.Directors.Add(director);
                     }
 
-                    movie.Directors.Add(director);
+                    sqlConnection.Close();
                 }
-
-                sqlConnection.Close();
-            }
+            });
         }
 
-        private void LoadMovieStudios(Movie movie)
+        private Task LoadMovieStudios(Movie movie)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Studio.Id_studio, Studio.Name as 'StudioName', Country.Id_country, Country.Name as 'CountryName' "+
-                               "FROM Movie "+
-                                   "JOIN Movie_Studio "+
-                                   "ON Movie.Id_movie = Movie_Studio.Id_movie "+
-                                   "JOIN Studio "+
-                                   "ON Studio.Id_studio = Movie_Studio.Id_studio "+
-                                   "JOIN Country "+
-                                   "ON Studio.Id_country = Country.Id_country "+
-                               $"WHERE Movie.[Name] = '{movie.Name}'";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    movie.Studios.Add(new Studio
-                                        (Convert.ToInt32(sqlDataReader["Id_studio"]), sqlDataReader["StudioName"].ToString(), new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString())));
-                }
+                    string query = "SELECT Studio.Id_studio, Studio.Name as 'StudioName', Country.Id_country, Country.Name as 'CountryName' " +
+                                   "FROM Movie " +
+                                       "JOIN Movie_Studio " +
+                                       "ON Movie.Id_movie = Movie_Studio.Id_movie " +
+                                       "JOIN Studio " +
+                                       "ON Studio.Id_studio = Movie_Studio.Id_studio " +
+                                       "JOIN Country " +
+                                       "ON Studio.Id_country = Country.Id_country " +
+                                   $"WHERE Movie.[Name] = '{movie.Name}'";
 
-                sqlConnection.Close();
-            }
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        movie.Studios.Add(new Studio
+                                            (Convert.ToInt32(sqlDataReader["Id_studio"]), sqlDataReader["StudioName"].ToString(), new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString())));
+                    }
+
+                    sqlConnection.Close();
+                }
+            });
         }
 
-        private void LoadMovieGenres(Movie movie)
+        private Task LoadMovieGenres(Movie movie)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Genre.Id_genre, Genre.Name "+
-                               "FROM Movie "+
-                                   "JOIN Movie_Genre "+
-                                   "ON Movie.Id_movie = Movie_Genre.Id_movie "+
-                                   "JOIN Genre "+
-                                   "ON Movie_Genre.Id_genre = Genre.Id_genre "+
-                               $"WHERE Movie.[Name] = '{movie.Name}'";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    movie.Genres.Add(new Genre
-                        (Convert.ToInt32(sqlDataReader["Id_genre"]), sqlDataReader["Name"].ToString()));
-                        
-                }
+                    string query = "SELECT Genre.Id_genre, Genre.Name " +
+                                   "FROM Movie " +
+                                       "JOIN Movie_Genre " +
+                                       "ON Movie.Id_movie = Movie_Genre.Id_movie " +
+                                       "JOIN Genre " +
+                                       "ON Movie_Genre.Id_genre = Genre.Id_genre " +
+                                   $"WHERE Movie.[Name] = '{movie.Name}'";
 
-                sqlConnection.Close();
-            }
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        movie.Genres.Add(new Genre
+                            (Convert.ToInt32(sqlDataReader["Id_genre"]), sqlDataReader["Name"].ToString()));
+
+                    }
+
+                    sqlConnection.Close();
+                }
+            });
         }
-        private void LoadMovieStorages(Movie movie)
+        private Task LoadMovieStorages(Movie movie)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Storage.Id_storage, Storage.Name "+
-                               "FROM Movie "+
-                                    "JOIN Storage "+
-                                    "ON Movie.Id_storage = Storage.Id_storage "+
-                               $"WHERE Movie.[Name] = '{movie.Name}'";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    movie.Storage = new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["Name"].ToString());
+                    string query = "SELECT Storage.Id_storage, Storage.Name " +
+                                   "FROM Movie " +
+                                        "JOIN Storage " +
+                                        "ON Movie.Id_storage = Storage.Id_storage " +
+                                   $"WHERE Movie.[Name] = '{movie.Name}'";
 
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        movie.Storage = new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["Name"].ToString());
+
+                    }
+
+                    sqlConnection.Close();
                 }
-
-                sqlConnection.Close();
-            }
+            });
         }
         #endregion
 
         #region Загрузка всех актеров и фильмов для каждого актера
-        private void LoadActors()
+        private Task LoadActors()
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Actor.Id_actor, Actor.Name as 'ActorName', Actor.Surname, Actor.Patronym, Actor.Gender, Actor.Birthday, Country.Id_country, Country.Name as 'CountryName' "+
-                               "FROM Actor "+
-                                   "LEFT JOIN Country "+
-                                   "ON Actor.Id_country = Country.Id_country";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    Actor actor = new Actor(
-                           Convert.ToInt32(sqlDataReader["id_actor"]), sqlDataReader["ActorName"].ToString(), sqlDataReader["Surname"].ToString(),
-                           sqlDataReader["Patronym"].ToString(), sqlDataReader["Gender"].ToString(), null, new Country());
+                    string query = "SELECT Actor.Id_actor, Actor.Name as 'ActorName', Actor.Surname, Actor.Patronym, Actor.Gender, Actor.Birthday, Country.Id_country, Country.Name as 'CountryName' " +
+                                   "FROM Actor " +
+                                       "LEFT JOIN Country " +
+                                       "ON Actor.Id_country = Country.Id_country";
 
-                    if (sqlDataReader["Birthday"] != DBNull.Value)
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
                     {
-                        actor.Birthday = (DateTime?)sqlDataReader["Birthday"];
-                    }
-                    if(sqlDataReader["Id_country"] != DBNull.Value && sqlDataReader["CountryName"] != DBNull.Value)
-                    {
-                        actor.Country = new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString());
+                        Actor actor = new Actor(
+                               Convert.ToInt32(sqlDataReader["id_actor"]), sqlDataReader["ActorName"].ToString(), sqlDataReader["Surname"].ToString(),
+                               sqlDataReader["Patronym"].ToString(), sqlDataReader["Gender"].ToString(), null, new Country());
+
+                        if (sqlDataReader["Birthday"] != DBNull.Value)
+                        {
+                            actor.Birthday = (DateTime?)sqlDataReader["Birthday"];
+                        }
+                        if (sqlDataReader["Id_country"] != DBNull.Value && sqlDataReader["CountryName"] != DBNull.Value)
+                        {
+                            actor.Country = new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString());
+                        }
+
+                        LoadActorMovies(actor).Wait();
+
+                        actors.Add(actor);
                     }
 
-                    LoadActorMovies(actor);
-
-                    actors.Add(actor);
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
                 }
-
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+            });
         }
 
-        private void LoadActorMovies(Actor actor)
+        private Task LoadActorMovies(Actor actor)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Movie.Id_movie, Movie.Name as 'MovieName', Movie.Description, Movie.Duration, Movie.Number_series, Movie.Release, Storage.Id_storage, Storage.Name as 'StorageName' "+
-                               "FROM Movie "+
-                                   "JOIN Movie_Actor "+
-                                   "ON Movie_Actor.Id_movie = Movie.Id_movie "+
-                                   "JOIN Actor "+
-                                   "ON Actor.Id_actor = Movie_Actor.Id_actor "+
-                                   "JOIN Storage "+
-                                   "ON Storage.Id_storage = Movie.Id_storage "+
-                               $"Where Actor.Name = '{actor.Name}' AND Actor.Surname = '{actor.Surname}' " +
-                               $"AND(Actor.Patronym IS NULL OR Actor.Patronym = '{actor.Patronym}')";
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "SELECT Movie.Id_movie, Movie.Name as 'MovieName', Movie.Description, Movie.Duration, Movie.Number_series, Movie.Release, Storage.Id_storage, Storage.Name as 'StorageName' " +
+                                   "FROM Movie " +
+                                       "JOIN Movie_Actor " +
+                                       "ON Movie_Actor.Id_movie = Movie.Id_movie " +
+                                       "JOIN Actor " +
+                                       "ON Actor.Id_actor = Movie_Actor.Id_actor " +
+                                       "JOIN Storage " +
+                                       "ON Storage.Id_storage = Movie.Id_storage " +
+                                   $"Where Actor.Name = '{actor.Name}' AND Actor.Surname = '{actor.Surname}' " +
+                                   $"AND(Actor.Patronym IS NULL OR Actor.Patronym = '{actor.Patronym}')";
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                while (sqlDataReader.Read())
-                {     
-                    actor.Movies.Add(new Movie(
-                            Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                            new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
+                    while (sqlDataReader.Read())
+                    {
+                        actor.Movies.Add(new Movie(
+                                Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
                 }
-
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+            });
         }
         #endregion
 
         #region Загрузка всех Режиссеров и фильмов для каждого режиссера
-        private void LoadDirectors()
+        private Task LoadDirectors()
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Director.Id_director, Director.Name as 'DirectorName', Director.Surname, Director.Patronym, Director.Gender, Director.Birthday, Country.Id_Country, Country.Name as 'CountryName' "+
-                               "FROM Director "+
-                                   "LEFT JOIN Country "+
-                                   "ON Director.Id_country = Country.Id_country";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    Director director = new Director(
-                           Convert.ToInt32(sqlDataReader["id_director"]), sqlDataReader["DirectorName"].ToString(), sqlDataReader["Surname"].ToString(),
-                           sqlDataReader["Patronym"].ToString(), sqlDataReader["Gender"].ToString(), null, new Country());
+                    string query = "SELECT Director.Id_director, Director.Name as 'DirectorName', Director.Surname, Director.Patronym, Director.Gender, Director.Birthday, Country.Id_Country, Country.Name as 'CountryName' " +
+                                   "FROM Director " +
+                                       "LEFT JOIN Country " +
+                                       "ON Director.Id_country = Country.Id_country";
 
-                    if (sqlDataReader["Birthday"] != DBNull.Value)
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
                     {
-                        director.Birthday = (DateTime?)sqlDataReader["Birthday"];
+                        Director director = new Director(
+                               Convert.ToInt32(sqlDataReader["id_director"]), sqlDataReader["DirectorName"].ToString(), sqlDataReader["Surname"].ToString(),
+                               sqlDataReader["Patronym"].ToString(), sqlDataReader["Gender"].ToString(), null, new Country());
+
+                        if (sqlDataReader["Birthday"] != DBNull.Value)
+                        {
+                            director.Birthday = (DateTime?)sqlDataReader["Birthday"];
+                        }
+                        if (sqlDataReader["Id_country"] != DBNull.Value && sqlDataReader["CountryName"] != DBNull.Value)
+                        {
+                            director.Country = new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString());
+                        }
+
+
+                        LoadDirectorMovies(director).Wait();
+
+                        directors.Add(director);
                     }
-                    if (sqlDataReader["Id_country"] != DBNull.Value && sqlDataReader["CountryName"] != DBNull.Value)
-                    {
-                        director.Country = new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString());
-                    }
 
-
-                    LoadDirectorMovies(director);
-
-                    directors.Add(director);
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
                 }
-
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+            });
         }
 
-        private void LoadDirectorMovies(Director director)
+        private Task LoadDirectorMovies(Director director)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Movie.Id_movie, Movie.Name as 'MovieName', Movie.Description, Movie.Duration, Movie.Number_series, Movie.Release, Storage.Id_storage, Storage.Name as 'StorageName' "+
-                               "FROM Movie "+
-                                   "JOIN Movie_Director "+
-                                   "ON Movie_Director.Id_movie = Movie.Id_movie "+
-                                   "JOIN Director "+
-                                   "ON Director.Id_director = Movie_Director.Id_director "+
-                                   "JOIN Storage "+
-                                   "ON Storage.Id_storage = Movie.Id_storage "+
-                               $"Where Director.Name = '{director.Name}' AND Director.Surname = '{director.Surname}' " +
-                               $"AND(Director.Patronym IS NULL OR Director.Patronym = '{director.Patronym}')";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    director.Movies.Add(new Movie(
-                            Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                            new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
-                }
+                    string query = "SELECT Movie.Id_movie, Movie.Name as 'MovieName', Movie.Description, Movie.Duration, Movie.Number_series, Movie.Release, Storage.Id_storage, Storage.Name as 'StorageName' " +
+                                   "FROM Movie " +
+                                       "JOIN Movie_Director " +
+                                       "ON Movie_Director.Id_movie = Movie.Id_movie " +
+                                       "JOIN Director " +
+                                       "ON Director.Id_director = Movie_Director.Id_director " +
+                                       "JOIN Storage " +
+                                       "ON Storage.Id_storage = Movie.Id_storage " +
+                                   $"Where Director.Name = '{director.Name}' AND Director.Surname = '{director.Surname}' " +
+                                   $"AND(Director.Patronym IS NULL OR Director.Patronym = '{director.Patronym}')";
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        director.Movies.Add(new Movie(
+                                Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
         #endregion
         
         #region Загрузка всех жанров и фильмов для всех жанра
-        private void LoadGenres()
+        private Task LoadGenres()
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT * " +
-                               "FROM Genre ";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    Genre genre;
+                    string query = "SELECT * " +
+                                   "FROM Genre ";
 
-                    genre = new Genre(
-                           Convert.ToInt32(sqlDataReader["id_genre"]), sqlDataReader["Name"].ToString());
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        Genre genre;
+
+                        genre = new Genre(
+                               Convert.ToInt32(sqlDataReader["id_genre"]), sqlDataReader["Name"].ToString());
 
 
-                    LoadGenreMovies(genre);
+                        LoadGenreMovies(genre).Wait();
 
-                    genres.Add(genre);
+                        genres.Add(genre);
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
                 }
-
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+            });
         }
 
-        private void LoadGenreMovies(Genre genre)
+        private Task LoadGenreMovies(Genre genre)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Movie.Id_movie, Movie.Name as 'MovieName', Movie.Description, Movie.Duration, Movie.Number_series, Movie.Release, Storage.Id_storage, Storage.Name as 'StorageName'"+
-                               "FROM Movie "+
-                                   "JOIN Movie_Genre "+
-                                   "ON Movie_Genre.Id_movie = Movie.Id_movie "+
-                                   "JOIN Genre "+
-                                   "ON Movie_Genre.Id_genre = Genre.Id_genre "+
-                                   "JOIN Storage "+
-                                   "ON Storage.Id_storage = Movie.Id_storage "+
-                               $"Where Genre.Name = '{genre.Name}'";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    //genre.Movies.Add(new Movie(
-                    //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                    //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
-                    genre.Movies.Add(new Movie(
-                           Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                           new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
-                }
+                    string query = "SELECT Movie.Id_movie, Movie.Name as 'MovieName', Movie.Description, Movie.Duration, Movie.Number_series, Movie.Release, Storage.Id_storage, Storage.Name as 'StorageName'" +
+                                   "FROM Movie " +
+                                       "JOIN Movie_Genre " +
+                                       "ON Movie_Genre.Id_movie = Movie.Id_movie " +
+                                       "JOIN Genre " +
+                                       "ON Movie_Genre.Id_genre = Genre.Id_genre " +
+                                       "JOIN Storage " +
+                                       "ON Storage.Id_storage = Movie.Id_storage " +
+                                   $"Where Genre.Name = '{genre.Name}'";
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        //genre.Movies.Add(new Movie(
+                        //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                        //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
+                        genre.Movies.Add(new Movie(
+                               Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                               new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
         #endregion
 
         #region Загрузка всех студий и фильмов для всех студий
-        private void LoadStudios()
+        private Task LoadStudios()
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Studio.Id_studio, Studio.Name as 'StudioName', Country.Id_country, Country.Name as 'CountryName' "+
-                               "FROM Studio "+
-                                   "JOIN Country "+
-                                   "ON Country.Id_country = Studio.Id_country";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    Studio studio;
+                    string query = "SELECT Studio.Id_studio, Studio.Name as 'StudioName', Country.Id_country, Country.Name as 'CountryName' " +
+                                   "FROM Studio " +
+                                       "JOIN Country " +
+                                       "ON Country.Id_country = Studio.Id_country";
 
-                    studio = new Studio(
-                           Convert.ToInt32(sqlDataReader["id_studio"]), sqlDataReader["StudioName"].ToString(), new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString()));
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        Studio studio;
+
+                        studio = new Studio(
+                               Convert.ToInt32(sqlDataReader["id_studio"]), sqlDataReader["StudioName"].ToString(), new Country(Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["CountryName"].ToString()));
 
 
-                    LoadStudioMovies(studio);
+                        LoadStudioMovies(studio).Wait();
 
-                    studios.Add(studio);
+                        studios.Add(studio);
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
                 }
-
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+            });
         }
 
-        private void LoadStudioMovies(Studio studio)
+        private Task LoadStudioMovies(Studio studio)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Movie.Id_movie, Movie.Name as 'MovieName', Movie.Description, Movie.Id_storage, Storage.Name as 'StorageName', Movie.Duration, Movie.Number_series, Movie.Release "+
-                               "FROM Studio "+
-                                   "JOIN Country "+
-                                   "ON Country.Id_country = Studio.Id_country "+
-                                   "JOIN Movie_Studio "+
-                                   "ON Movie_Studio.Id_studio = Studio.Id_studio "+
-                                   "JOIN Movie "+
-                                   "ON Movie.Id_movie = Movie_Studio.Id_movie "+
-                                   "JOIN Storage "+
-                                   "ON Storage.Id_storage = Movie.Id_storage "+
-                              $"Where Studio.Name = '{studio.Name}'";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    //studio.Movies.Add(new Movie(
-                    //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                    //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
-                    studio.Movies.Add(new Movie(
-                            Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                            new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
-                }
+                    string query = "SELECT Movie.Id_movie, Movie.Name as 'MovieName', Movie.Description, Movie.Id_storage, Storage.Name as 'StorageName', Movie.Duration, Movie.Number_series, Movie.Release " +
+                                   "FROM Studio " +
+                                       "JOIN Country " +
+                                       "ON Country.Id_country = Studio.Id_country " +
+                                       "JOIN Movie_Studio " +
+                                       "ON Movie_Studio.Id_studio = Studio.Id_studio " +
+                                       "JOIN Movie " +
+                                       "ON Movie.Id_movie = Movie_Studio.Id_movie " +
+                                       "JOIN Storage " +
+                                       "ON Storage.Id_storage = Movie.Id_storage " +
+                                  $"Where Studio.Name = '{studio.Name}'";
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        //studio.Movies.Add(new Movie(
+                        //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                        //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
+                        studio.Movies.Add(new Movie(
+                                Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
         #endregion
 
         #region Загрузка всех накопителей
-        private void LoadStorages()
+        private Task LoadStorages()
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Storage.Id_storage, Storage.Name "+
-                               "FROM Storage";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    Storage storage;
+                    string query = "SELECT Storage.Id_storage, Storage.Name " +
+                                   "FROM Storage";
 
-                    storage = new Storage(
-                           Convert.ToInt32(sqlDataReader["id_storage"]), sqlDataReader["Name"].ToString());
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    storages.Add(storage);
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        Storage storage;
+
+                        storage = new Storage(
+                               Convert.ToInt32(sqlDataReader["id_storage"]), sqlDataReader["Name"].ToString());
+
+                        storages.Add(storage);
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
                 }
-
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+            });
         }
         #endregion
 
         #region Загрузка всех стран
-        private void LoadCountries()
+        private Task LoadCountries()
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "SELECT Country.Id_country, Country.Name " +
-                               "FROM Country";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                while (sqlDataReader.Read())
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                 {
-                    Country country;
+                    string query = "SELECT Country.Id_country, Country.Name " +
+                                   "FROM Country";
 
-                    country = new Country(
-                           Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["Name"].ToString());
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    countries.Add(country);
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        Country country;
+
+                        country = new Country(
+                               Convert.ToInt32(sqlDataReader["Id_country"]), sqlDataReader["Name"].ToString());
+
+                        countries.Add(country);
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
                 }
-
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+            });
         }
         #endregion
 
         #region Добавление, удаление, обновление фильма
-        public void AddMovie(Movie movie)
+        public Task AddMovie(Movie movie)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "INSERT INTO Movie " +
-                               $"VALUES ('{movie.Name}', '{movie.Description}', '{movie.Storage.ID}', '{movie.CountOfSeries}', '{movie.Duration}', '{movie.Release}')";
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "INSERT INTO Movie " +
+                                   $"VALUES ('{movie.Name}', '{movie.Description}', '{movie.Storage.ID}', '{movie.CountOfSeries}', '{movie.Duration}', '{movie.Release}') " +
+                                       "SELECT TOP 1* "+
+                                       "FROM Movie "+
+                                       "ORDER BY Id_movie DESC";
+                    
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    while(sqlDataReader.Read())
+                    {
+                        movie.ID = Convert.ToInt32(sqlDataReader["Id_movie"]);
+                    }
+                    sqlDataReader.Close();
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    FillMoviesEntities(movie, sqlConnection);
+
+                    sqlConnection.Close();
+                }
+            });
         }
 
-        public void DeleteMovie(Movie movie)
+        private void FillMoviesEntities(Movie movie, SqlConnection sqlConnection)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
-            {
-                string query = "DELETE FROM Movie " +
-                               $"WHERE Id_movie = {movie.ID }";
-
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-
-
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+            FillMovieActors(movie, sqlConnection);
+            FillMovieDirectors(movie, sqlConnection);
+            FillMovieStudios(movie, sqlConnection);
+            FillMovieGenres(movie, sqlConnection);
         }
 
-        public void UpdateMovie(Movie movie)
+        private void FillMovieActors(Movie movie, SqlConnection sqlConnection)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            string queryMovie_Actor = "INSERT INTO Movie_Actor VALUES ";
+            foreach (var actor in movie.Actors)
             {
-                string query = "UPDATE Movie " +
-                               $"SET Name = '{movie.Name}', Description = '{movie.Description}', Id_storage = '{movie.Storage.ID}', Number_series = '{movie.CountOfSeries}', Duration = '{movie.Duration}', Release = '{movie.Release}' " +
-                               $"WHERE Id_movie = {movie.ID}";
+                if (actor != movie.Actors.Last())
+                {
+                    queryMovie_Actor += $"('{movie.ID}', '{actor.ID}'), ";
+                }
+                else
+                {
+                    queryMovie_Actor += $"('{movie.ID}', '{actor.ID}')";
+                }
+            }
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+            SqlCommand sqlCommandMovie_Actor = new SqlCommand(queryMovie_Actor, sqlConnection);
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+            SqlDataReader sqlDataReaderMovie_Actor = sqlCommandMovie_Actor.ExecuteReader();
+            sqlDataReaderMovie_Actor.Close();
+        }
+        private void FillMovieDirectors(Movie movie, SqlConnection sqlConnection)
+        {
+            string queryMovie_Director = "INSERT INTO Movie_Director VALUES ";
+            foreach (var director in movie.Directors)
+            {
+                if (director != movie.Directors.Last())
+                {
+                    queryMovie_Director += $"('{movie.ID}', '{director.ID}'), ";
+                }
+                else
+                {
+                    queryMovie_Director += $"('{movie.ID}', '{director.ID}')";
+                }
+            }
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
+            SqlCommand sqlCommandMovie_Director = new SqlCommand(queryMovie_Director, sqlConnection);
+
+            SqlDataReader sqlDataReaderMovie_Director = sqlCommandMovie_Director.ExecuteReader();
+            sqlDataReaderMovie_Director.Close();
+        }
+        private void FillMovieStudios(Movie movie, SqlConnection sqlConnection)
+        {
+            string queryMovie_Studio = "INSERT INTO Movie_Studio VALUES ";
+            foreach (var studio in movie.Studios)
+            {
+                if (studio != movie.Studios.Last())
+                {
+                    queryMovie_Studio += $"('{movie.ID}', '{studio.ID}'), ";
+                }
+                else
+                {
+                    queryMovie_Studio += $"('{movie.ID}', '{studio.ID}')";
+                }
+            }
+
+            SqlCommand sqlCommandMovie_Studio = new SqlCommand(queryMovie_Studio, sqlConnection);
+
+            SqlDataReader sqlDataReaderMovie_Studio= sqlCommandMovie_Studio.ExecuteReader();
+            sqlDataReaderMovie_Studio.Close();
+        }
+        private void FillMovieGenres(Movie movie, SqlConnection sqlConnection)
+        {
+            string queryMovie_Genre = "INSERT INTO Movie_Genre VALUES ";
+            foreach (var genre in movie.Genres)
+            {
+                if (genre != movie.Genres.Last())
+                {
+                    queryMovie_Genre += $"('{movie.ID}', '{genre.ID}'), ";
+                }
+                else
+                {
+                    queryMovie_Genre += $"('{movie.ID}', '{genre.ID}')";
+                }
+            }
+
+            SqlCommand sqlCommandMovie_Genre = new SqlCommand(queryMovie_Genre, sqlConnection);
+
+            SqlDataReader sqlDataReaderMovie_Genre = sqlCommandMovie_Genre.ExecuteReader();
+            sqlDataReaderMovie_Genre.Close();
+        }
+
+
+        public Task DeleteMovie(Movie movie)
+        {
+            return Task.Run(() =>
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "DELETE FROM Movie " +
+                                   $"WHERE Id_movie = {movie.ID }";
+
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+
+                    DeleteMovieRelations(movie, sqlConnection);
+
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
+        }
+        private void DeleteMovieRelations(Movie movie, SqlConnection sqlConnection)
+        {
+            DeleteRelationMovieAndActors(movie, sqlConnection);
+            DeleteRelationMovieAndDirectors(movie, sqlConnection);
+            DeleteRelationMovieAndStudios(movie, sqlConnection);
+            DeleteRelationMovieAndGenres(movie, sqlConnection);
+        }
+
+        private void DeleteRelationMovieAndActors(Movie movie, SqlConnection sqlConnection)
+        {
+            string queryDeletePreviousActors = "DELETE FROM Movie_Actor " +
+                                                  $"WHERE Id_Movie = {movie.ID}";
+
+            SqlCommand sqlCommandMovie_ActorsDelete = new SqlCommand(queryDeletePreviousActors, sqlConnection);
+            SqlDataReader sqlDataReaderMovie_ActorsDelete = sqlCommandMovie_ActorsDelete.ExecuteReader();
+
+            sqlDataReaderMovie_ActorsDelete.Close();
+        }
+        private void DeleteRelationMovieAndDirectors(Movie movie, SqlConnection sqlConnection)
+        {
+            string queryDeletePreviousDirectors = "DELETE FROM Movie_Director " +
+                                                  $"WHERE Id_Movie = {movie.ID}";
+
+            SqlCommand sqlCommandMovie_DirectorsDelete = new SqlCommand(queryDeletePreviousDirectors, sqlConnection);
+            SqlDataReader sqlDataReaderMovie_DirectorsDelete = sqlCommandMovie_DirectorsDelete.ExecuteReader();
+
+            sqlDataReaderMovie_DirectorsDelete.Close();
+        }
+        private void DeleteRelationMovieAndStudios(Movie movie, SqlConnection sqlConnection)
+        {
+            string queryDeletePreviousStudios = "DELETE FROM Movie_Studio " +
+                                                  $"WHERE Id_Movie = {movie.ID}";
+
+            SqlCommand sqlCommandMovie_StudiosDelete = new SqlCommand(queryDeletePreviousStudios, sqlConnection);
+            SqlDataReader sqlDataReaderMovie_StudiosDelete = sqlCommandMovie_StudiosDelete.ExecuteReader();
+
+            sqlDataReaderMovie_StudiosDelete.Close();
+        }
+        private void DeleteRelationMovieAndGenres(Movie movie, SqlConnection sqlConnection)
+        {
+            string queryDeletePreviousGenres = "DELETE FROM Movie_Genre " +
+                                                  $"WHERE Id_Movie = {movie.ID}";
+
+            SqlCommand sqlCommandMovie_GenresDelete = new SqlCommand(queryDeletePreviousGenres, sqlConnection);
+            SqlDataReader sqlDataReaderMovie_GenresDelete = sqlCommandMovie_GenresDelete.ExecuteReader();
+
+            sqlDataReaderMovie_GenresDelete.Close();
+        }
+
+        public Task UpdateMovie(Movie movie)
+        {
+            return Task.Run(() =>
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "UPDATE Movie " +
+                                   $"SET Name = '{movie.Name}', Description = '{movie.Description}', Id_storage = '{movie.Storage.ID}', Number_series = '{movie.CountOfSeries}', Duration = '{movie.Duration}', Release = '{movie.Release}' " +
+                                   $"WHERE Id_movie = {movie.ID}";
+
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    sqlDataReader.Close();
+
+                    UpdateMoviesEntities(movie, sqlConnection);
+
+                    sqlConnection.Close();
+                }
+            });
+        }
+
+        private void UpdateMoviesEntities(Movie movie, SqlConnection sqlConnection)
+        {
+            UpdateMovieActors(movie, sqlConnection);
+            UpdateMovieDirectors(movie, sqlConnection);
+            UpdateMovieStudios(movie, sqlConnection);
+            UpdateMovieGenres(movie, sqlConnection);
+        }
+
+        private void UpdateMovieActors(Movie movie, SqlConnection sqlConnection)
+        {
+            DeleteRelationMovieAndActors(movie, sqlConnection);
+
+            if (movie.Actors.Count != 0)
+            {
+                FillMovieActors(movie, sqlConnection);
+            }
+        }
+        private void UpdateMovieDirectors(Movie movie, SqlConnection sqlConnection)
+        {
+            DeleteRelationMovieAndDirectors(movie, sqlConnection);
+
+            if (movie.Directors.Count != 0)
+            {
+                FillMovieDirectors(movie, sqlConnection);
+            }
+        }
+        private void UpdateMovieStudios(Movie movie, SqlConnection sqlConnection)
+        {
+            DeleteRelationMovieAndStudios(movie, sqlConnection);
+
+            if (movie.Studios.Count != 0)
+            {
+                FillMovieStudios(movie, sqlConnection);
+            }
+        }
+        private void UpdateMovieGenres(Movie movie, SqlConnection sqlConnection)
+        {
+            DeleteRelationMovieAndGenres(movie, sqlConnection);
+
+            if (movie.Genres.Count != 0)
+            {
+                FillMovieGenres(movie, sqlConnection);
             }
         }
         #endregion
 
         #region Добавление, удаление, обновление актера
-        public void AddActor(Actor actor)
+        public Task AddActor(Actor actor)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "INSERT INTO Actor " +
-                               $"VALUES ('{actor.Name}', '{actor.Surname}', '{actor.Patronym}', '{actor.Gender}', '{actor.Birthday}', '{actor.Country.ID}')";
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "INSERT INTO Actor " +
+                                   $"VALUES ('{actor.Name}', '{actor.Surname}', '{actor.Patronym}', '{actor.Gender}', '{actor.Birthday}', '{actor.Country.ID}')";
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
 
-        public void DeleteActor(Actor actor)
+        public Task DeleteActor(Actor actor)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "DELETE FROM Actor " +
-                               $"WHERE Id_Actor = {actor.ID }";
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "DELETE FROM Actor " +
+                                   $"WHERE Id_Actor = {actor.ID }";
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
 
-        public void UpdateActor(Actor actor)
+        public Task UpdateActor(Actor actor)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "UPDATE Actor " +
-                               $"SET Name = '{actor.Name}', Surname = '{actor.Surname}', Patronym = '{actor.Patronym}', Gender = '{actor.Gender}', Birthday = '{actor.Birthday}', Id_country = '{actor.Country.ID}' "+
-                               $"WHERE Id_actor = {actor.ID}";
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "UPDATE Actor " +
+                                   $"SET Name = '{actor.Name}', Surname = '{actor.Surname}', Patronym = '{actor.Patronym}', Gender = '{actor.Gender}', Birthday = '{actor.Birthday}', Id_country = '{actor.Country.ID}' " +
+                                   $"WHERE Id_actor = {actor.ID}";
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
         #endregion
 
         #region Добавление, удаление, обновление режиссера
-        public void AddDirector(Director director)
+        public Task AddDirector(Director director)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "INSERT INTO Director " +
-                               $"VALUES ('{director.Name}', '{director.Surname}', '{director.Patronym}', '{director.Gender}', '{director.Birthday}', '{director.Country.ID}')";
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "INSERT INTO Director " +
+                                   $"VALUES ('{director.Name}', '{director.Surname}', '{director.Patronym}', '{director.Gender}', '{director.Birthday}', '{director.Country.ID}')";
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
 
-        public void DeleteDirector(Director director)
+        public Task DeleteDirector(Director director)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "DELETE FROM Director " +
-                               $"WHERE Id_director = {director.ID }";
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "DELETE FROM Director " +
+                                   $"WHERE Id_director = {director.ID }";
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
 
-        public void UpdateDirector(Director director)
+        public Task UpdateDirector(Director director)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "UPDATE Director " +
-                               $"SET Name = '{director.Name}', Surname = '{director.Surname}', Patronym = '{director.Patronym}', Gender = '{director.Gender}', Birthday = '{director.Birthday}', Id_country = '{director.Country.ID}' " +
-                               $"WHERE Id_director = {director.ID}";
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "UPDATE Director " +
+                                   $"SET Name = '{director.Name}', Surname = '{director.Surname}', Patronym = '{director.Patronym}', Gender = '{director.Gender}', Birthday = '{director.Birthday}', Id_country = '{director.Country.ID}' " +
+                                   $"WHERE Id_director = {director.ID}";
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
         #endregion
 
         #region Удаление жанра
-        public void DeleteGenre(Genre genre)
+        public Task DeleteGenre(Genre genre)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+            return Task.Run(() =>
             {
-                string query = "DELETE FROM Genre " +
-                               $"WHERE Id_genre = {genre.ID}";
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "DELETE FROM Genre " +
+                                   $"WHERE Id_genre = {genre.ID}";
 
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                sqlConnection.Open();
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                sqlDataReader.Close();
-                sqlConnection.Close();
-            }
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
         }
 
         #endregion
 
         #region Добавление, удаление, обновление студии
-        public void AddStudio(Studio studio)
+        public Task AddStudio(Studio studio)
+        {
+            return Task.Run(() =>
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "INSERT INTO Studio " +
+                                   $"VALUES ('{studio.Name}', '{studio.Country.ID}')";
+
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
+        }
+
+        public Task DeleteStudio(Studio studio)
+        {
+            return Task.Run(() =>
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "DELETE FROM Studio " +
+                                   $"WHERE Id_studio = {studio.ID }";
+
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
+        }
+
+        public Task UpdateStudio(Studio studio)
+        {
+            return Task.Run(() =>
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "UPDATE Studio " +
+                                   $"SET Name = '{studio.Name}', Id_country = '{studio.Country.ID}'" +
+                                   $"WHERE Id_studio = {studio.ID}";
+
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+            });
+        }
+        #endregion
+
+        #region Загрузка связей фильма и его сущностей
+        private void LoadRelationMoviesAndActors()
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                {
+                    string query = "SELECT * " +
+                                   "FROM Movie_Actor";
+
+                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                    sqlConnection.Open();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                    while (sqlDataReader.Read())
+                    {
+                        movie_Actors.Add(Convert.ToInt32(sqlDataReader["Id_movie"]), Convert.ToInt32(sqlDataReader["Id_actor"]));
+                    }
+
+                    sqlDataReader.Close();
+                    sqlConnection.Close();
+                }
+        }
+
+        private void LoadRelationMoviesAndDirectors()
         {
             using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
             {
-                string query = "INSERT INTO Studio " +
-                               $"VALUES ('{studio.Name}', '{studio.Country.ID}')";
+                string query = "SELECT * " +
+                               "FROM Movie_Director";
 
                 SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
                 sqlConnection.Open();
                 SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                while (sqlDataReader.Read())
+                {
+                    movie_Directors.Add(Convert.ToInt32(sqlDataReader["Id_movie"]), Convert.ToInt32(sqlDataReader["Id_director"]));
+                }
 
                 sqlDataReader.Close();
                 sqlConnection.Close();
             }
         }
 
-        public void DeleteStudio(Studio studio)
+        private void LoadRelationMoviesAndStudios()
         {
             using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
             {
-                string query = "DELETE FROM Studio " +
-                               $"WHERE Id_studio = {studio.ID }";
+                string query = "SELECT * " +
+                               "FROM Movie_Studio";
 
                 SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
                 sqlConnection.Open();
                 SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                while (sqlDataReader.Read())
+                {
+                    movie_Studios.Add(Convert.ToInt32(sqlDataReader["Id_movie"]), Convert.ToInt32(sqlDataReader["Id_studio"]));
+                }
 
                 sqlDataReader.Close();
                 sqlConnection.Close();
             }
         }
 
-        public void UpdateStudio(Studio studio)
+        private void LoadRelationMoviesAndGenres()
         {
             using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
             {
-                string query = "UPDATE Studio " +
-                               $"SET Name = '{studio.Name}', Id_country = '{studio.Country.ID}'" +
-                               $"WHERE Id_studio = {studio.ID}";
+                string query = "SELECT * " +
+                               "FROM Movie_genre";
 
                 SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
                 sqlConnection.Open();
                 SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                while (sqlDataReader.Read())
+                {
+                    movie_Genres.Add(Convert.ToInt32(sqlDataReader["Id_movie"]), Convert.ToInt32(sqlDataReader["Id_genre"]));
+                }
 
                 sqlDataReader.Close();
                 sqlConnection.Close();
@@ -805,63 +1192,99 @@ namespace Movie_Collection.DataAccess
         #region Получение сущностей
         public Task<List<Movie>> GetMovies()
         {
-            return Task.Run<List<Movie>>(() =>
+            return Task.Run<List<Movie>>(async () =>
             {
                 movies.Clear();
 
-                LoadMovies();
+                await LoadMovies();
                 return new List<Movie>(movies);
             });
         }
-        public List<Actor> GetActors()
+        public Task<List<Actor>> GetActors()
         {
-            actors.Clear();
+            return Task.Run<List<Actor>>(async() =>
+            {
+                actors.Clear();
 
-            LoadActors();
-            return new List<Actor>(actors);
+                await LoadActors();
+                return new List<Actor>(actors);
+            });
         }
-        public List<Director> GetDirectors()
+        public Task<List<Director>> GetDirectors()
         {
-            directors.Clear();
+            return Task.Run<List<Director>>(async () =>
+            {
+                directors.Clear();
 
-            LoadDirectors();
-            return new List<Director>(directors);
+                await LoadDirectors();
+                return new List<Director>(directors);
+            });
         }
-        public List<Studio> GetStudios()
+        public Task<List<Studio>> GetStudios()
         {
-            studios.Clear();
+            return Task.Run<List<Studio>>(async () =>
+            {
+                studios.Clear();
 
-            LoadStudios();
-            return new List<Studio>(studios);
+                await LoadStudios();
+                return new List<Studio>(studios);
+            });
         }
-        public List<Genre> GetGenres()
+        public Task<List<Genre>> GetGenres()
         {
-            genres.Clear();
+            return Task.Run<List<Genre>>(async () =>
+            {
+                genres.Clear();
 
-            LoadGenres();
-            return new List<Genre>(genres);
+                await LoadGenres();
+                return new List<Genre>(genres);
+            });
         }
-        public List<Storage> GetStorages()
+        public Task<List<Storage>> GetStorages()
         {
-            storages.Clear();
+            return Task.Run<List<Storage>>(async () =>
+            {
+                storages.Clear();
 
-            LoadStorages();
-            return new List<Storage>(storages);
+                await LoadStorages();
+                return new List<Storage>(storages);
+            });
         }
-        public List<Country> GetCountries()
+        public Task<List<Country>> GetCountries()
         {
-            countries.Clear();
+            return Task.Run<List<Country>>(async () =>
+            {
+                countries.Clear();
 
-            LoadCountries();
-            return new List<Country>(countries);
+                await LoadCountries();
+                return new List<Country>(countries);
+            });
+        }
+
+        private void GetMovie_Actors()
+        {
+            movie_Actors.Clear();
+
+            LoadRelationMoviesAndActors();
+        }
+        private void GetMovie_Directors()
+        {
+            movie_Directors.Clear();
+
+            LoadRelationMoviesAndDirectors();
+        }
+        private void GetMovie_Studios()
+        {
+            movie_Studios.Clear();
+
+            LoadRelationMoviesAndStudios();
+        }
+        private void GetMovie_Genres()
+        {
+            movie_Genres.Clear();
+
+            LoadRelationMoviesAndGenres();
         }
         #endregion
-
-
-        //if (sqlDataReader["Birthday"] != DBNull.Value)
-        //            {
-        //                director.Birthday = (DateTime?)sqlDataReader["Birthday"];
-        //            }
-        //            DateTime?
     }
 }

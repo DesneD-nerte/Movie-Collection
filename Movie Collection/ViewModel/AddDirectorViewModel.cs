@@ -57,7 +57,7 @@ namespace Movie_Collection.ViewModel
             if (directorViewModel != null)
             {
                 director = directorViewModel;
-                SelectedCountry = new CountryViewModel(director.director.Country);
+                SelectedCountry = new CountryViewModel(director.Director.Country);
             }
             else
             {
@@ -75,9 +75,9 @@ namespace Movie_Collection.ViewModel
             CreateNewCountries();
         }
 
-        private void CreateNewCountries()
+        private async void CreateNewCountries()
         {
-            List<CountryViewModel> countries = (from db in dataBaseAddDirector.GetCountries() select new CountryViewModel(db)).ToList();
+            List<CountryViewModel> countries = (from db in await dataBaseAddDirector.GetCountries() select new CountryViewModel(db)).ToList();
             AllCountry = new ObservableCollection<CountryViewModel>(countries);
         }
     }

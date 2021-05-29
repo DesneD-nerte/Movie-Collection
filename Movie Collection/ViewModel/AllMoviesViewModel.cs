@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace Movie_Collection.ViewModel
             base.DisplayName = Strings.AllMoviesViewModel_DisplayName;
 
             dataBaseMovies = dataBase;
-            GetAllMovies(mainWindowViewModel);
+            GetAllMovies(mainWindowViewModel);////////////////////////////////////////////////////////
         }
 
         //Добавление всех фильмов на таблицу поочередно

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -68,12 +69,15 @@ namespace Movie_Collection.ViewModel
             
             dataBaseAddStudio = dataBase;
 
-            CreateNewsCountries();
+            CreateNewsCountries().Wait();
         }
-        private void CreateNewsCountries()
+        private Task CreateNewsCountries()
         {
-            List<CountryViewModel> studios = (from db in dataBaseAddStudio.GetCountries() select new CountryViewModel(db)).ToList();
-            AllCountry = new ObservableCollection<CountryViewModel>(studios);
+            return Task.Run(async() =>
+            {
+                List<CountryViewModel> studios = (from db in await dataBaseAddStudio.GetCountries() select new CountryViewModel(db)).ToList();
+                AllCountry = new ObservableCollection<CountryViewModel>(studios);
+            });
         }
     }
 }

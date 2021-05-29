@@ -4,7 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Movie_Collection.View"
-      mc:Ignorable="d" 
+             xmlns:intr="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
@@ -30,7 +31,14 @@
                 </MultiTrigger>
             </Style.Triggers>
         </Style>
-
+        
+        <Style x:Key="ItemStyle" TargetType="{x:Type DataGridCell}">
+            <Style.Triggers>
+                <Trigger Property="DataGridCell.IsSelected" Value="True">
+                    <Setter Property="Background" Value="#FF4760A0" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -48,27 +56,34 @@
         </Grid.ColumnDefinitions>
 
         <TextBox Style="{DynamicResource RoundedTextBoxStyle}" Grid.Column="0"
+                 Text="{Binding SearchDirector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  VerticalAlignment="Center"
                  HorizontalAlignment="Left"
                  Margin="10,0,0,0"
                  Width="160"
                  TextWrapping="Wrap"
-                 Text="Поиск"
-                 Height="40"
-                 />
+                 Height="40">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="TextChanged">
+                    <intr:InvokeCommandAction Command="{Binding FindDirectorCommand}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
+        </TextBox>
 
         <!--ItemContainerStyle="{StaticResource MovieItemStyle}"-->
-        <DataGrid Grid.Column="0" Grid.Row="1" Margin="10,10,10,10"
+        <DataGrid x:Name="MainDataGrid" Grid.Column="0" Grid.Row="1" Margin="10,10,10,10"
+                  IsReadOnly="True"
                   AutoGenerateColumns="False"
+                  MaxHeight="220"
                   ItemsSource="{Binding Directors}"
-                  SelectedItem="{Binding SelectedDirector}">
+                  SelectedItem="{Binding SelectedDirector}" SelectionChanged="MainDataGrid_SelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Имя" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}"/>
-                <DataGridTextColumn Header="Отчество" Binding="{Binding Patronym}"/>
-                <DataGridTextColumn Header="Пол" Binding="{Binding Gender}"/>
-                <DataGridTextColumn Header="День рождения" Binding="{Binding Birthday}"/>
-                <DataGridTextColumn Header="Страна" Binding="{Binding Country}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}"  Header="Имя" Binding="{Binding Name}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}"  Header="Фамилия" Binding="{Binding Surname}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}"  Header="Отчество" Binding="{Binding Patronym}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}"  Header="Пол" Binding="{Binding Gender}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}"  Header="День рождения" Binding="{Binding Birthday}"/>
+                <DataGridTextColumn CellStyle="{StaticResource ItemStyle}"  Header="Страна" Binding="{Binding Country}"/>
             </DataGrid.Columns>
         </DataGrid>
 
@@ -80,6 +95,7 @@
             Margin="10,0,0,0"/>
 
         <DataGrid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1"
+                  IsReadOnly="True"
                   Margin="10,10,10,10"
                   DataContext="{Binding SelectedDirector}"
                   ItemsSource="{Binding Movies}"
@@ -93,7 +109,7 @@
                 <DataGridTextColumn Header="Продолжительность" Binding="{Binding Duration}"/>
                 <DataGridTextColumn Header="Количество Серий" Binding="{Binding CountOfSeries}"/>
                 <DataGridTextColumn Header="Год выхода" Binding="{Binding Release}"/>
-                <DataGridTextColumn Header="Накопитель" Binding="{Binding StorageName}"/>
+                <DataGridTextColumn Header="Накопитель" Binding="{Binding Storage.Name}"/>
             </DataGrid.Columns>
         </DataGrid>
 

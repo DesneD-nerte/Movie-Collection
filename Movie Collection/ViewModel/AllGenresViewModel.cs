@@ -34,10 +34,10 @@ namespace Movie_Collection.ViewModel
             GetAllGenres();
         }
 
-        private void GetAllGenres()
+        private async void GetAllGenres()
         {
             Genres = new ObservableCollection<GenreViewModel>();
-            foreach (var genre in dataBaseGenres.GetGenres())
+            foreach (var genre in await dataBaseGenres.GetGenres())
             {
                 var newGenre = new GenreViewModel(genre);
 
@@ -46,7 +46,7 @@ namespace Movie_Collection.ViewModel
         }
 
         RelayCommand deleteCommand;
-        RelayCommand findMovieCommand;
+        RelayCommand findGenreCommand;
         public ICommand DeleteCommand
         {
             get
@@ -65,22 +65,22 @@ namespace Movie_Collection.ViewModel
                 return deleteCommand;
             }
         }
-        public ICommand FindMovieCommand
+        public ICommand FindGenreCommand
         {
             get
             {
-                if (findMovieCommand == null)
+                if (findGenreCommand == null)
                 {
-                    findMovieCommand = new RelayCommand(param =>
+                    findGenreCommand = new RelayCommand(param =>
                     {
                         try
                         {
-                            selectedGenre = Genres.First(x => x.Name.Contains(SearchGenre));
+                            SelectedGenre = Genres.First(x => x.Name.Contains(SearchGenre));
                         }
                         catch { }
                     });
                 }
-                return findMovieCommand;
+                return findGenreCommand;
             }
         }
 

@@ -12,9 +12,8 @@ namespace Movie_Collection.ViewModel
 {
     class MovieViewModel : WorkspaceViewModel
     {
-        Movie movie;
-        bool isSelected = false;
-        MainWindowViewModel mainWindowViewModel;
+        readonly Movie movie;
+        readonly MainWindowViewModel mainWindowViewModel;
 
         public string Name
         {
@@ -25,6 +24,7 @@ namespace Movie_Collection.ViewModel
             set
             {
                 movie.Name = value;
+                base.OnPropertyChanged("Name");
             }
         }
         public string Description
@@ -36,6 +36,7 @@ namespace Movie_Collection.ViewModel
             set
             {
                 movie.Description = value;
+                base.OnPropertyChanged("Description");
             }
         }
         public TimeSpan Duration
@@ -47,6 +48,7 @@ namespace Movie_Collection.ViewModel
             set
             {
                 movie.Duration = value;
+                base.OnPropertyChanged("Duration");
             }
         }
         public int CountOfSeries
@@ -58,6 +60,7 @@ namespace Movie_Collection.ViewModel
             set
             {
                 movie.CountOfSeries = value;
+                base.OnPropertyChanged("CountOfSeries");
             }
         }
         public DateTime Release
@@ -69,28 +72,21 @@ namespace Movie_Collection.ViewModel
             set
             {
                 movie.Release = value;
+                base.OnPropertyChanged("Release");
             }
         }
-        //public string StorageName
-        //{
-        //    get
-        //    {
-        //        return movie.Storage.Name;
-        //    }
-        //    set
-        //    {
-        //        movie.Storage.Name = value;
-        //    }
-        //}
 
         public void UpdateStorage(Storage storage)
         {
-            Storage = new StorageViewModel(storage);/////////////////////////////
+            Storage = new StorageViewModel(storage);
             movie.Storage = storage;
         }
 
         RelayCommand editCommand;
-
+        RelayCommand doubleClickDeleteStudiosCommand;
+        RelayCommand doubleClickDeleteActorsCommand;
+        RelayCommand doubleClickDeleteDirectorsCommand;
+        RelayCommand doubleClickDeleteGenresCommand;
         public ICommand EditCommand
         {
             get
@@ -102,8 +98,135 @@ namespace Movie_Collection.ViewModel
                 return editCommand;
             }
         }
+        public ICommand DoubleClickDeleteStudiosCommand
+        {
+            get
+            {
+                if (doubleClickDeleteStudiosCommand == null)
+                {
+                    doubleClickDeleteStudiosCommand = new RelayCommand(param =>
+                    {
+                        if (SelectedStudio != null)
+                        {
+                            if (movie.Studios.Contains(SelectedStudio.Studio))
+                            {
+                                movie.Studios.Remove(SelectedStudio.Studio);
+                                Studios.Remove(SelectedStudio);
+                            }
+                        }
+                    }
+                    );
+                }
+                return doubleClickDeleteStudiosCommand;
+            }
+        }
+        public ICommand DoubleClickDeleteActorsCommand
+        {
+            get
+            {
+                if (doubleClickDeleteActorsCommand == null)
+                {
+                    doubleClickDeleteActorsCommand = new RelayCommand(param =>
+                    {
+                        if (SelectedActor != null)
+                        {
+                            if (movie.Actors.Contains(SelectedActor.Actor))
+                            {
+                                movie.Actors.Remove(SelectedActor.Actor);
+                                Actors.Remove(SelectedActor);
+                            }
+                        }
+                    }
+                    );
+                }
+                return doubleClickDeleteActorsCommand;
+            }
+        }
+        public ICommand DoubleClickDeleteDirectorsCommand
+        {
+            get
+            {
+                if (doubleClickDeleteDirectorsCommand == null)
+                {
+                    doubleClickDeleteDirectorsCommand = new RelayCommand(param =>
+                    {
+                        if (SelectedDirector != null)
+                        {
+                            if (movie.Directors.Contains(SelectedDirector.Director))
+                            {
+                                movie.Directors.Remove(SelectedDirector.Director);
+                                Directors.Remove(SelectedDirector);
+                            }
+                        }
+                    }
+                    );
+                }
+                return doubleClickDeleteDirectorsCommand;
+            }
+        }
+        public ICommand DoubleClickDeleteGenresCommand
+        {
+            get
+            {
+                if (doubleClickDeleteGenresCommand == null)
+                {
+                    doubleClickDeleteGenresCommand = new RelayCommand(param =>
+                    {
+                        if (SelectedGenre != null)
+                        {
+                            if (movie.Genres.Contains(SelectedGenre.Genre))
+                            {
+                                movie.Genres.Remove(SelectedGenre.Genre);
+                                Genres.Remove(SelectedGenre);
+                            }
+                        }
+                    }
+                    );
+                }
+                return doubleClickDeleteGenresCommand;
+            }
+        }
+        StudioViewModel selectedStudio;
+        ActorViewModel selectedActor;
+        DirectorViewModel selectedDirector;
+        GenreViewModel selectedGenre;
 
-
+        public StudioViewModel SelectedStudio
+        {
+            get => selectedStudio;
+            set
+            {
+                selectedStudio = value;
+                base.OnPropertyChanged("SelectedStudio");
+            }
+        }
+        public ActorViewModel SelectedActor
+        {
+            get => selectedActor;
+            set
+            {
+                selectedActor = value;
+                base.OnPropertyChanged("SelectedActor");
+            }
+        }
+        public DirectorViewModel SelectedDirector
+        {
+            get => selectedDirector;
+            set
+            {
+                selectedDirector = value;
+                base.OnPropertyChanged("SelectedDirector");
+            }
+        }
+        public GenreViewModel SelectedGenre
+        {
+            get => selectedGenre;
+            set
+            {
+                selectedGenre = value;
+                base.OnPropertyChanged("SelectedGenre");
+            }
+        }
         public ObservableCollection<ActorViewModel> Actors { get; private set; }
         public ObservableCollection<DirectorViewModel> Directors { get; private set; }
         public ObservableCollection<GenreViewModel> Genres { get; private set; }
@@ -132,44 +255,43 @@ namespace Movie_Collection.ViewModel
         }
 
         //в самом классе Movie надо обновть списки
-        public void AddMovie(DataBaseWork dataBase)
+        public async void AddMovie(DataBaseWork dataBase)
         {
-            foreach (var actorViewModel in Actors)
-            {
-                movie.Actors.Add(actorViewModel.Actor);
-            }
-            foreach (var directorViewModel in Directors)
-            {
-                movie.Directors.Add(directorViewModel.director);
-            }
-
-            foreach (var studioViewModel in Studios)
-            {
-                movie.Studios.Add(studioViewModel.Studio);
-            }
-
-            foreach (var genreViewModel in Genres)
-            {
-                movie.Genres.Add(genreViewModel.Genre);
-            }
-
-
             if (movie.ID == 0)
             {
-                dataBase.AddMovie(movie);
+                foreach (var actorViewModel in Actors)
+                {
+                    movie.Actors.Add(actorViewModel.Actor);
+                }
+                foreach (var directorViewModel in Directors)
+                {
+                    movie.Directors.Add(directorViewModel.Director);
+                }
+
+                foreach (var studioViewModel in Studios)
+                {
+                    movie.Studios.Add(studioViewModel.Studio);
+                }
+
+                foreach (var genreViewModel in Genres)
+                {
+                    movie.Genres.Add(genreViewModel.Genre);
+                }
+
+                await dataBase.AddMovie(movie);
             }
             else
             {
-                dataBase.UpdateMovie(movie);
+                await dataBase.UpdateMovie(movie);
             }
         }
-        public void UpdateMovie(DataBaseWork dataBase)
+        public async void UpdateMovie(DataBaseWork dataBase)
         {
-            dataBase.UpdateMovie(movie);
+            await dataBase.UpdateMovie(movie);
         }
-        public void DeleteMovie(DataBaseWork dataBase)
+        public async void DeleteMovie(DataBaseWork dataBase)
         {
-            dataBase.DeleteMovie(movie);
+            await dataBase.DeleteMovie(movie);
         }
     }
 }
