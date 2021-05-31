@@ -7,7 +7,7 @@ using System.Windows.Threading;
 
 namespace Movie_Collection.ViewModel
 {
-    internal abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
+    public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
         protected ViewModelBase()
         {

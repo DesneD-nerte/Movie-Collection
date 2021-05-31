@@ -124,7 +124,8 @@
                  FontSize="25"
                  Margin="20,20,20,20"
                  DataContext="{Binding Movie}"
-                 Text="{Binding Name, Mode=TwoWay}">
+                 Text="{Binding Name, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                 ToolTip="{Binding ErrorCollection[Name]}">
         </TextBox>
 
         <Label Content="Описание:" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"/>
@@ -135,15 +136,6 @@
                  Margin="20,2"
                  DataContext="{Binding Movie}"
                  Text="{Binding Description, Mode=TwoWay}"/>
-
-        <!--<Label Content="Количество серий:"
-               VerticalContentAlignment="Center"
-               
-               FontSize="18" 
-               Grid.Row="2" Grid.Column="1"
-               VerticalAlignment="Center"
-               Margin="20,0,0,0">
-        </Label>-->
 
         <TextBlock
             Text="Количество серий:"
@@ -159,21 +151,18 @@
                  HorizontalContentAlignment="Left"
                  VerticalContentAlignment="Center"
                  DataContext="{Binding Movie}"
-                 Margin="0,20,0,20">
-            <TextBox.Text>
-                <Binding Path="CountOfSeries">
-                    <Binding.ValidationRules>
-                        <DataErrorValidationRule />
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
+                 Margin="0,20,0,20"
+                 Text="{Binding CountOfSeries, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                 ToolTip="{Binding ErrorCollection[CountOfSeries]}">
         </TextBox>
 
-        <!--<Label Content="Длительность:"
-               Grid.Row="2" Grid.Column="3"
-               VerticalAlignment="Center"
-               Margin="20,0,0,0">
-        </Label>-->
+        <!--<TextBox.Text>
+            <Binding Path="CountOfSeries">
+                <Binding.ValidationRules>
+                    <DataErrorValidationRule />
+                </Binding.ValidationRules>
+            </Binding>
+        </TextBox.Text>-->
 
         <TextBlock Text="Длительность:"
                Grid.Row="2" Grid.Column="3"
@@ -182,12 +171,22 @@
                Margin="20,0,0,0">
         </TextBlock>
 
-        <TextBox Grid.Column="3" Grid.Row="2"
+        <TextBox Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="3"
                  FontSize="18"
                  HorizontalContentAlignment="Left"
                  VerticalContentAlignment="Center"
+                 Margin="152,20,152,20"
                  DataContext="{Binding Movie}"
-                 Text="{Binding Duration, Mode=TwoWay}" Grid.ColumnSpan="3" Margin="152,20,152,20"/>
+                 Text="{Binding Duration, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                 ToolTip="{Binding ErrorCollection[Duration]}">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="TextChanged">
+                    <intr:InvokeCommandAction
+                        Command="{Binding SetNullCommand}"
+                        CommandParameter="{Binding Duration}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
+        </TextBox>
 
         <!--<Label Content="Релиз:"
                Grid.Row="2" Grid.Column="5"
@@ -201,27 +200,30 @@
                Margin="20,0,0,0"
                FontSize="18">
         </TextBlock>
-        
-        <TextBox Grid.Column="5" Grid.Row="2"
+
+        <TextBox Grid.Column="5" Grid.Row="2" Grid.ColumnSpan="3"
                  FontSize="18"
+                 Margin="152,20,91,20"
                  HorizontalContentAlignment="Left"
                  VerticalContentAlignment="Center"
                  DataContext="{Binding Movie}"
-                 Text="{Binding Release, Mode=TwoWay}" Grid.ColumnSpan="3" Margin="152,20,91,20"/>
-        <!--abel Content="Список Накопителей:"
-               FontSize="18"
-               Grid.Row="3" Grid.Column="3"
-               VerticalAlignment="Bottom"
-               HorizontalAlignment="Center"/>-->
+                 Text="{Binding Release, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                 ToolTip="{Binding ErrorCollection[Release]}">
+            <intr:Interaction.Triggers>
+                <intr:EventTrigger EventName="TextChanged">
+                    <intr:InvokeCommandAction Command="{Binding SetNullCommand}"/>
+                </intr:EventTrigger>
+            </intr:Interaction.Triggers>
+        </TextBox>
 
-            <TextBlock Text="Список Накопителей:"
+        <TextBlock Text="Список Накопителей:"
                    TextWrapping="Wrap"
                    FontSize="18"
                    Grid.Row="3" Grid.Column="3"
                    VerticalAlignment="Center"
                    HorizontalAlignment="Center">
-                
-            </TextBlock>
+
+        </TextBlock>
 
         <ComboBox
                   Grid.Column="3"
@@ -234,7 +236,6 @@
                   SelectedItem="{Binding SelectedStorage, Mode=TwoWay}"
             IsSynchronizedWithCurrentItem="True"
                   DisplayMemberPath="Name"/>
-        <TextBlock Grid.Column="5" HorizontalAlignment="Center" Grid.Row="4" Text="{Binding SelectedStorage.Name, Mode=TwoWay}" TextWrapping="Wrap" VerticalAlignment="Top"/>
 
         <Label Content="Список студий:" VerticalContentAlignment="Center" FontSize="18" Grid.Row="5" Grid.Column="1"/>
         <ListView Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="1"
@@ -467,9 +468,18 @@
             </ListView.View>
         </ListView>
 
-        <Button Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="4"
+        <Button Style="{DynamicResource BlackButton}"
+            Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="4"
                 Content="Готово" Margin="152,51,152,50" FontSize="28"
                 Command="{Binding AddMovieCommand}">
         </Button>
+        <Button Style="{DynamicResource BlackButton}"
+                Command="{Binding GenerateMoviesCommand}"
+                Content="Сгенерировать фильмы" Grid.Column="5" 
+                HorizontalAlignment="Left"
+                Margin="36,0,0,0"
+                FontSize="18"
+                Grid.Row="13"
+                VerticalAlignment="Center" Height="33" Width="249" Grid.ColumnSpan="2"/>
     </Grid>
 </UserControl>

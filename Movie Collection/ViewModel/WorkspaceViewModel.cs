@@ -5,7 +5,7 @@ using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
-    class WorkspaceViewModel : ViewModelBase
+    public class WorkspaceViewModel : ViewModelBase
     {
         RelayCommand closeCommand;
 

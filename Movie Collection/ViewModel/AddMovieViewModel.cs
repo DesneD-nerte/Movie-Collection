@@ -8,11 +8,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
-    class AddMovieViewModel : WorkspaceViewModel, IDataErrorInfo
+    class AddMovieViewModel : WorkspaceViewModel
     {
         MovieViewModel movie;
 
@@ -21,6 +22,8 @@ namespace Movie_Collection.ViewModel
         DirectorViewModel selectedDirector;
         GenreViewModel selectedGenre;
         StorageViewModel selectedStorage;
+
+        GeneratorMovies generatorMovies = new GeneratorMovies();
 
         public MovieViewModel Movie
         {
@@ -92,8 +95,8 @@ namespace Movie_Collection.ViewModel
         RelayCommand doubleClickDirectorsCommand;
         RelayCommand doubleClickGenresCommand;
 
-
         RelayCommand addMovieCommand;
+        RelayCommand generateMoviesCommand;
 
         #region Двойной клик для выбора студий, актеров, режиссеров, жанров, накопителя фильма
         public ICommand DoubleClickStudiosCommand
@@ -106,7 +109,7 @@ namespace Movie_Collection.ViewModel
                         {
                             if (SelectedStudio != null)
                             {
-                                if (!movie.Studios.Contains(SelectedStudio))
+                                if (!Movie.Studios.Any(x => x.Studio.Name == SelectedStudio.Name))
                                 {
                                     Movie.Studios.Add(SelectedStudio);
                                 }
@@ -127,7 +130,7 @@ namespace Movie_Collection.ViewModel
                     {
                         if (SelectedActor != null)
                         {
-                            if (!Movie.Actors.Contains(SelectedActor))
+                            if (!Movie.Actors.Any(x => x.Actor.Name == SelectedActor.Name))
                             {
                                 Movie.Actors.Add(SelectedActor);
                             }
@@ -148,7 +151,7 @@ namespace Movie_Collection.ViewModel
                     {
                         if (SelectedDirector != null)
                         {
-                            if (!Movie.Directors.Contains(SelectedDirector))
+                            if (!Movie.Directors.Any(x => x.Director.Name == SelectedDirector.Name))
                             {
                                 Movie.Directors.Add(SelectedDirector);
                             }
@@ -169,7 +172,7 @@ namespace Movie_Collection.ViewModel
                     {
                         if (SelectedGenre != null)
                         {
-                            if (!Movie.Genres.Contains(SelectedGenre))
+                            if(!Movie.Genres.Any(x => x.Genre.Name == SelectedGenre.Name))
                             {
                                 Movie.Genres.Add(SelectedGenre);
                             }
@@ -188,37 +191,26 @@ namespace Movie_Collection.ViewModel
             {
                 if (addMovieCommand == null)
                 {
-                    addMovieCommand = new RelayCommand(param => Movie.AddMovie(dataBaseAddMovie));
+                    addMovieCommand = new RelayCommand(param =>
+                    {
+                          Movie.AddMovie(dataBaseAddMovie);
+                    });
                 }
                 return addMovieCommand;
             }
         }
-
-        public string Error
-        {
-            get 
-            { 
-                return (movie as IDataErrorInfo).Error; 
-            }
-        }
-
-        public string this[string propertyName]
+        public ICommand GenerateMoviesCommand
         {
             get
             {
-                string error = null;
-
-                if (propertyName == "CustomerType")
+                if (generateMoviesCommand == null)
                 {
-                    //error = this.ValidateCustomerType();
+                    generateMoviesCommand = new RelayCommand(param =>
+                    {
+                        generatorMovies.CreateNewMovies(dataBaseAddMovie, 1);
+                    });
                 }
-                else
-                {
-                    error = (movie as IDataErrorInfo)[propertyName];
-                }
-                //CommandManager.InvalidateRequerySuggested();
-
-                return error;
+                return generateMoviesCommand;
             }
         }
 

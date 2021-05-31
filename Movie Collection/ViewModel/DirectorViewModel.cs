@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
-    class DirectorViewModel : WorkspaceViewModel
+    public class DirectorViewModel : WorkspaceViewModel
     {
         internal Director Director { get; set; }
         MainWindowViewModel mainWindowViewModel;

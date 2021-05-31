@@ -41,10 +41,9 @@ namespace Movie_Collection.ViewModel
             base.DisplayName = Strings.AllMoviesViewModel_DisplayName;
 
             dataBaseMovies = dataBase;
-            GetAllMovies(mainWindowViewModel);////////////////////////////////////////////////////////
+            GetAllMovies(mainWindowViewModel);
         }
 
-        //Добавление всех фильмов на таблицу поочередно
         private async void GetAllMovies(MainWindowViewModel mainWindowViewModel = null)
         {
             Movies = new ObservableCollection<MovieViewModel>();

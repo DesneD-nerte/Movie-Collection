@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Movie_Collection.Model
 {
-    class Studio
+    public class Studio
     {
         public int ID { get; set; }
         public string Name { get; set; }

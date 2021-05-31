@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Movie_Collection.ViewModel
 {
-    class GenreViewModel : WorkspaceViewModel
+    public class GenreViewModel : WorkspaceViewModel
     {
         internal Genre Genre { get; set; }
 

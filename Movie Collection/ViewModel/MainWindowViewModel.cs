@@ -18,7 +18,7 @@ using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
-    class MainWindowViewModel : WorkspaceViewModel
+    public class MainWindowViewModel : WorkspaceViewModel
     {
 
         #region Fields
@@ -34,10 +34,27 @@ namespace Movie_Collection.ViewModel
 
         #endregion
 
+        string exceptionMessage;
+        public string ExceptionMessage
+        {
+            get => exceptionMessage;
+            set
+            {
+                exceptionMessage = String.Empty;
+                exceptionMessage = value;
+                base.OnPropertyChanged("ExceptionMessage");
+            }
+        }
+
         public MainWindowViewModel(string databaseConnectionString)
         {
             //base.DisplayName = Strings.MainWindowViewModel_DisplayName;
             dataBaseWork = new DataBaseWork(databaseConnectionString);
+            dataBaseWork.ErrorMessage += ErrorDataBase;
+        }
+        void ErrorDataBase(object sender, ErrorEventArgs e)
+        {
+            ExceptionMessage = e.Message;
         }
 
         #region Команды менюшки
@@ -206,14 +223,14 @@ namespace Movie_Collection.ViewModel
 
                 if (oneworkspace == null)
                 {
-                    Dispatcher.Invoke(() => 
+                    Dispatcher.Invoke(() =>
                     {
-                        oneworkspace = new AllMoviesViewModel(dataBaseWork, this);//////////////////////////!!!!!!!!!!!!!!!!!
-                        this.Workspaces.Add(oneworkspace); 
+                        oneworkspace = new AllMoviesViewModel(dataBaseWork, this);
+                        this.Workspaces.Add(oneworkspace);
                     }
                     );
                 }
-                 Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     this.SetActiveWorkspace(oneworkspace);
                 }
@@ -232,7 +249,7 @@ namespace Movie_Collection.ViewModel
                 {
                     if (oneworkspace == null)
                     {
-                        oneworkspace = new AllStudiosViewModel(dataBaseWork, this);//////
+                        oneworkspace = new AllStudiosViewModel(dataBaseWork, this);
                         this.Workspaces.Add(oneworkspace);
                     }
 
@@ -252,7 +269,7 @@ namespace Movie_Collection.ViewModel
                 {
                     if (oneworkspace == null)
                     {
-                        oneworkspace = new AllActorsViewModel(dataBaseWork, this);///////
+                        oneworkspace = new AllActorsViewModel(dataBaseWork, this);
                         this.Workspaces.Add(oneworkspace);
                     }
 
@@ -272,7 +289,7 @@ namespace Movie_Collection.ViewModel
                 {
                     if (oneworkspace == null)
                     {
-                        oneworkspace = new AllDirectorsViewModel(dataBaseWork, this);//////
+                        oneworkspace = new AllDirectorsViewModel(dataBaseWork, this);
                         this.Workspaces.Add(oneworkspace);
                     }
 
@@ -292,7 +309,7 @@ namespace Movie_Collection.ViewModel
                 {
                     if (oneworkspace == null)
                     {
-                        oneworkspace = new AllGenresViewModel(dataBaseWork);////
+                        oneworkspace = new AllGenresViewModel(dataBaseWork);
                         this.Workspaces.Add(oneworkspace);
                     }
 
@@ -301,12 +318,11 @@ namespace Movie_Collection.ViewModel
             });
         }
 
-        //TO DO
-        private void ShowAddMovie()////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private void ShowAddMovie()
         {
             Task.Run(() =>
             {
-                AddMovieViewModel oneworkspace = new AddMovieViewModel(dataBaseWork);/////
+                AddMovieViewModel oneworkspace = new AddMovieViewModel(dataBaseWork);
                 Dispatcher.InvokeAsync(() =>
                 {
                     this.Workspaces.Add(oneworkspace);
@@ -320,7 +336,7 @@ namespace Movie_Collection.ViewModel
         {
             Task.Run(() =>
             {
-                AddStudioViewModel oneworkspace = new AddStudioViewModel(dataBaseWork);//////
+                AddStudioViewModel oneworkspace = new AddStudioViewModel(dataBaseWork);
                 Dispatcher.InvokeAsync(() =>
                 {
                     this.Workspaces.Add(oneworkspace);
@@ -334,7 +350,7 @@ namespace Movie_Collection.ViewModel
         {
             Task.Run(() =>
             {
-                AddActorViewModel oneworkspace = new AddActorViewModel(dataBaseWork);//////
+                AddActorViewModel oneworkspace = new AddActorViewModel(dataBaseWork);
                 Dispatcher.InvokeAsync(() =>
                 {    
                     this.Workspaces.Add(oneworkspace);
@@ -348,7 +364,7 @@ namespace Movie_Collection.ViewModel
         {
             Task.Run(() =>
             {
-                AddDirectorViewModel oneworkspace = new AddDirectorViewModel(dataBaseWork);/////
+                AddDirectorViewModel oneworkspace = new AddDirectorViewModel(dataBaseWork);
                 Dispatcher.InvokeAsync(() =>
                 {
                     this.Workspaces.Add(oneworkspace);
@@ -357,7 +373,7 @@ namespace Movie_Collection.ViewModel
                 });
             });
         }
-        #endregion
+       
 
         public void ShowEditMovie(MovieViewModel movieViewModel)
         {
@@ -411,6 +427,9 @@ namespace Movie_Collection.ViewModel
                 });
             });
         }
+        #endregion
+
+
         #region Title
         //public string Title { get; set; } = "Коллекция фильмов";
 

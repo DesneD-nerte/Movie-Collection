@@ -5,7 +5,7 @@ using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
-    class CommandViewModel : ViewModelBase
+    public class CommandViewModel : ViewModelBase
     {
         public CommandViewModel(string displayName, ICommand command)
         {
