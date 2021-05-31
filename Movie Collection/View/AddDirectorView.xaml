@@ -105,7 +105,8 @@
 
 
         <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
-                Content="Готово" Margin="44,37,49,10" FontSize="28"
+                Style="{DynamicResource BlackButton}"
+                Content="Готово" Margin="44,37,49,27" FontSize="28"
                 Command="{Binding AddDirectorCommand}"/>
     </Grid>
 </UserControl>

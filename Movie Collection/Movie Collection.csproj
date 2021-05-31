@@ -5,7 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Movie_Collection</RootNamespace>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Images/Логотип.ico</ApplicationIcon>
+    <ApplicationIcon>Логотип.ico</ApplicationIcon>
+    <Win32Resource></Win32Resource>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,10 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" Version="33.0.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Resource Include="Images\MainIcon.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

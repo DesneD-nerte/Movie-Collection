@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Movie_Collection.ViewModel
 {
-    class CountryViewModel : WorkspaceViewModel
+    public class CountryViewModel : WorkspaceViewModel
     {
         internal Country Country{ get; set; }
 

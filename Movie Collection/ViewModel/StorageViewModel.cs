@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Movie_Collection.ViewModel
 {
-    class StorageViewModel : WorkspaceViewModel
+    public class StorageViewModel : WorkspaceViewModel
     {
         public Storage Storage { get; set; }
         public List<Movie> Movies { get; private set; }

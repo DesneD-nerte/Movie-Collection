@@ -45,7 +45,7 @@
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.Column="1" Background="Black" Margin="3,0,3,0" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="5" >
             </Separator>
 
-            <Image Source="/Images/MainIcon.png"
+            <Image Source="/MainIcon.png"
                    VerticalAlignment="Top"
                    HorizontalAlignment="Center" Margin="0,10,0,0" Height="105" Width="399">
             </Image>
@@ -93,6 +93,23 @@
                     </HeaderedContentControl>
                 </Border>
             </ScrollViewer>
+
+            <TextBox Grid.Row="4"
+                     Grid.Column="0"
+                     Text="{Binding ExceptionMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                     TextWrapping="Wrap"
+                     IsReadOnly="True"
+                     BorderThickness="0"
+                     Margin="15,5,16,5"
+                     VerticalAlignment="Center"
+                     Grid.ColumnSpan="9" Height="76"
+                     Background="#FF191919"
+                     Padding="7.5,5,7.5,5"
+                     FontSize="15"
+                     FontFamily="Roboto"
+                     BorderBrush="{x:Null}"
+                     Foreground="White" SelectionBrush="#FF6F62BF">
+            </TextBox>
 
             <!--<ScrollViewer Grid.Column="2" Grid.ColumnSpan="6" Grid.Row="2">
                 <Border 

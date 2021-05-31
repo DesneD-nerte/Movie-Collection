@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
-    class StudioViewModel : WorkspaceViewModel
+    public class StudioViewModel : WorkspaceViewModel
     {
         internal Studio Studio { get; set; }
         MainWindowViewModel mainWindowViewModel;

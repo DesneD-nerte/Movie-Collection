@@ -50,6 +50,7 @@
             VerticalAlignment="Top" Grid.Row="1" Height="24" Width="62"/>
 
         <Button Grid.Column="1"
+                Style="{DynamicResource BlackButton}"
                 Command="{Binding AddStudioCommand}"
                 FontSize="16"
                 Content="Подтвердить"    

@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace Movie_Collection.DataAccess
 {
-    class DataBaseWork
+    public class DataBaseWork
     {
         readonly string databaseConnectionString;
         public DataBaseWork(string serverName)
@@ -43,7 +43,7 @@ namespace Movie_Collection.DataAccess
                                        "ON M.Id_storage = S.Id_storage";
 
                     SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
+                    
                     sqlConnection.Open();
                     SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
@@ -51,7 +51,16 @@ namespace Movie_Collection.DataAccess
                     {
                         Movie movie = new Movie(
                             Convert.ToInt32(sqlDataReader["Id_movie"]), sqlDataReader["Name"].ToString(), sqlDataReader["Description"].ToString(),
-                            new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]);
+                            new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), null, null);
+
+                        if(sqlDataReader["Duration"] != DBNull.Value)
+                        {
+                            movie.Duration= (TimeSpan?)sqlDataReader["Duration"];
+                        }
+                        if (sqlDataReader["Release"] != DBNull.Value)
+                        {
+                            movie.Release = (DateTime?)sqlDataReader["Release"];
+                        }
 
                         LoadMovieItems(movie);
 
@@ -61,6 +70,7 @@ namespace Movie_Collection.DataAccess
                     sqlDataReader.Close();
                     sqlConnection.Close();
                 }
+
             });
         }
 
@@ -89,7 +99,7 @@ namespace Movie_Collection.DataAccess
                                         "ON Actor.Id_actor = Movie_Actor.Id_actor " +
                                         "LEFT JOIN Country " +
                                         "ON Actor.Id_country = Country.Id_country " +
-                                    $"WHERE Movie.[Name] = '{movie.Name}'";
+                                    $"WHERE Movie.[Name] = '{movie.Name}' AND Movie.Id_movie = '{movie.ID}'";
 
                     SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
@@ -133,7 +143,7 @@ namespace Movie_Collection.DataAccess
                                        "ON Director.Id_director = Movie_Director.Id_director " +
                                        "LEFT JOIN Country " +
                                        "ON Director.Id_country = Country.Id_country " +
-                                   $"WHERE Movie.[Name] = '{movie.Name}'";
+                                   $"WHERE Movie.[Name] = '{movie.Name}' AND Movie.Id_movie = '{movie.ID}'";
 
                     SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
@@ -177,7 +187,7 @@ namespace Movie_Collection.DataAccess
                                        "ON Studio.Id_studio = Movie_Studio.Id_studio " +
                                        "JOIN Country " +
                                        "ON Studio.Id_country = Country.Id_country " +
-                                   $"WHERE Movie.[Name] = '{movie.Name}'";
+                                   $"WHERE Movie.[Name] = '{movie.Name}' AND Movie.Id_movie = '{movie.ID}'";
 
                     SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
@@ -207,7 +217,7 @@ namespace Movie_Collection.DataAccess
                                        "ON Movie.Id_movie = Movie_Genre.Id_movie " +
                                        "JOIN Genre " +
                                        "ON Movie_Genre.Id_genre = Genre.Id_genre " +
-                                   $"WHERE Movie.[Name] = '{movie.Name}'";
+                                   $"WHERE Movie.[Name] = '{movie.Name}' AND Movie.Id_movie = '{movie.ID}'";
 
                     SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
@@ -235,7 +245,7 @@ namespace Movie_Collection.DataAccess
                                    "FROM Movie " +
                                         "JOIN Storage " +
                                         "ON Movie.Id_storage = Storage.Id_storage " +
-                                   $"WHERE Movie.[Name] = '{movie.Name}'";
+                                   $"WHERE Movie.[Name] = '{movie.Name}' AND Movie.Id_movie = '{movie.ID}'";
 
                     SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
@@ -321,9 +331,20 @@ namespace Movie_Collection.DataAccess
 
                     while (sqlDataReader.Read())
                     {
-                        actor.Movies.Add(new Movie(
-                                Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
+                        Movie movie = new Movie(
+                                Convert.ToInt32(sqlDataReader["Id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), null, null);
+
+                        if (sqlDataReader["Duration"] != DBNull.Value)
+                        {
+                            movie.Duration = (TimeSpan?)sqlDataReader["Duration"];
+                        }
+                        if (sqlDataReader["Release"] != DBNull.Value)
+                        {
+                            movie.Release = (DateTime?)sqlDataReader["Release"];
+                        }
+
+                        actor.Movies.Add(movie);
                     }
 
                     sqlDataReader.Close();
@@ -401,9 +422,20 @@ namespace Movie_Collection.DataAccess
 
                     while (sqlDataReader.Read())
                     {
-                        director.Movies.Add(new Movie(
-                                Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
+                        Movie movie = new Movie(
+                                Convert.ToInt32(sqlDataReader["Id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), null, null);
+
+                        if (sqlDataReader["Duration"] != DBNull.Value)
+                        {
+                            movie.Duration = (TimeSpan?)sqlDataReader["Duration"];
+                        }
+                        if (sqlDataReader["Release"] != DBNull.Value)
+                        {
+                            movie.Release = (DateTime?)sqlDataReader["Release"];
+                        }
+
+                        director.Movies.Add(movie);
                     }
 
                     sqlDataReader.Close();
@@ -470,12 +502,20 @@ namespace Movie_Collection.DataAccess
 
                     while (sqlDataReader.Read())
                     {
-                        //genre.Movies.Add(new Movie(
-                        //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                        //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
-                        genre.Movies.Add(new Movie(
-                               Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                               new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
+                        Movie movie = new Movie(
+                                Convert.ToInt32(sqlDataReader["Id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), null, null);
+
+                        if (sqlDataReader["Duration"] != DBNull.Value)
+                        {
+                            movie.Duration = (TimeSpan?)sqlDataReader["Duration"];
+                        }
+                        if (sqlDataReader["Release"] != DBNull.Value)
+                        {
+                            movie.Release = (DateTime?)sqlDataReader["Release"];
+                        }
+
+                        genre.Movies.Add(movie);
                     }
 
                     sqlDataReader.Close();
@@ -546,12 +586,20 @@ namespace Movie_Collection.DataAccess
 
                     while (sqlDataReader.Read())
                     {
-                        //studio.Movies.Add(new Movie(
-                        //    Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                        //    new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), sqlDataReader["Duration"].ToString(), sqlDataReader["Release"].ToString()));
-                        studio.Movies.Add(new Movie(
-                                Convert.ToInt32(sqlDataReader["id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
-                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), (TimeSpan)sqlDataReader["Duration"], (DateTime)sqlDataReader["Release"]));
+                        Movie movie = new Movie(
+                                Convert.ToInt32(sqlDataReader["Id_movie"]), sqlDataReader["MovieName"].ToString(), sqlDataReader["Description"].ToString(),
+                                new Storage(Convert.ToInt32(sqlDataReader["Id_storage"]), sqlDataReader["StorageName"].ToString()), Convert.ToInt32(sqlDataReader["Number_series"]), null, null);
+
+                        if (sqlDataReader["Duration"] != DBNull.Value)
+                        {
+                            movie.Duration = (TimeSpan?)sqlDataReader["Duration"];
+                        }
+                        if (sqlDataReader["Release"] != DBNull.Value)
+                        {
+                            movie.Release = (DateTime?)sqlDataReader["Release"];
+                        }
+
+                        studio.Movies.Add(movie);
                     }
 
                     sqlDataReader.Close();
@@ -630,38 +678,85 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "INSERT INTO Movie " +
-                                   $"VALUES ('{movie.Name}', '{movie.Description}', '{movie.Storage.ID}', '{movie.CountOfSeries}', '{movie.Duration}', '{movie.Release}') " +
-                                       "SELECT TOP 1* "+
-                                       "FROM Movie "+
-                                       "ORDER BY Id_movie DESC";
-                    
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                    while(sqlDataReader.Read())
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
                     {
-                        movie.ID = Convert.ToInt32(sqlDataReader["Id_movie"]);
+                        string query = "INSERT INTO Movie " +
+                                       $"VALUES ('{movie.Name}', '{movie.Description}', '{movie.Storage.ID}', '{movie.CountOfSeries}', ";
+
+                        if (movie.Duration != null)
+                        {
+                            query += $"{movie.Duration}, ";
+                        }
+                        else
+                        {
+                            query += "null, ";
+                        }
+                        if (movie.Release != null)
+                        {
+                            query += $"{movie.Release}) ";
+                        }
+                        else
+                        {
+                            query += "null) ";
+                        }
+
+                        query += "SELECT TOP 1* " +
+                                  "FROM Movie " +
+                                  "ORDER BY Id_movie DESC";
+
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+
+                        while (sqlDataReader.Read())
+                        {
+                            movie.ID = Convert.ToInt32(sqlDataReader["Id_movie"]);
+                        }
+                        sqlDataReader.Close();
+
+                        FillMoviesEntities(movie, sqlConnection);
+
+                        sqlConnection.Close();
                     }
-                    sqlDataReader.Close();
 
-                    FillMoviesEntities(movie, sqlConnection);
-
-                    sqlConnection.Close();
+                    Success("Добавление завершено");
+                }
+                catch(SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch(NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
 
         private void FillMoviesEntities(Movie movie, SqlConnection sqlConnection)
         {
-            FillMovieActors(movie, sqlConnection);
-            FillMovieDirectors(movie, sqlConnection);
-            FillMovieStudios(movie, sqlConnection);
-            FillMovieGenres(movie, sqlConnection);
+            if (movie.Actors.Count != 0)
+            {
+                FillMovieActors(movie, sqlConnection);
+            }
+            if (movie.Directors.Count != 0)
+            {
+                FillMovieDirectors(movie, sqlConnection);
+            }
+            if (movie.Studios.Count != 0)
+            {
+                FillMovieStudios(movie, sqlConnection);
+            }
+            if (movie.Genres.Count != 0)
+            {
+                FillMovieGenres(movie, sqlConnection);
+            }
         }
 
         private void FillMovieActors(Movie movie, SqlConnection sqlConnection)
@@ -750,21 +845,38 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "DELETE FROM Movie " +
-                                   $"WHERE Id_movie = {movie.ID }";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "DELETE FROM Movie " +
+                                       $"WHERE Id_movie = {movie.ID }";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
+                        sqlConnection.Open();
 
-                    DeleteMovieRelations(movie, sqlConnection);
+                        DeleteMovieRelations(movie, sqlConnection);
 
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Удаление завершено");
+                }
+                catch(SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch(NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -821,22 +933,57 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "UPDATE Movie " +
-                                   $"SET Name = '{movie.Name}', Description = '{movie.Description}', Id_storage = '{movie.Storage.ID}', Number_series = '{movie.CountOfSeries}', Duration = '{movie.Duration}', Release = '{movie.Release}' " +
-                                   $"WHERE Id_movie = {movie.ID}";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "UPDATE Movie " +
+                                       $"SET Name = '{movie.Name}', Description = '{movie.Description}', Id_storage = '{movie.Storage.ID}', Number_series = '{movie.CountOfSeries}', ";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        if (movie.Duration != null)
+                        {
+                            query += $"Duration = '{movie.Duration}', ";
+                        }
+                        else
+                        {
+                            query += "Duration = null, ";
+                        }
+                        if (movie.Release != null)
+                        {
+                            query += $"Release = '{movie.Release}' ";
+                        }
+                        else
+                        {
+                            query += "Release = null ";
+                        }
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        query += $"WHERE Id_movie = {movie.ID}";
 
-                    sqlDataReader.Close();
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    UpdateMoviesEntities(movie, sqlConnection);
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+
+                        UpdateMoviesEntities(movie, sqlConnection);
+
+                        sqlConnection.Close();
+                    }
+
+                    Success("Изменение завершено");
+                }
+                catch(SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch(NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch(Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -892,18 +1039,35 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "INSERT INTO Actor " +
-                                   $"VALUES ('{actor.Name}', '{actor.Surname}', '{actor.Patronym}', '{actor.Gender}', '{actor.Birthday}', '{actor.Country.ID}')";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "INSERT INTO Actor " +
+                                       $"VALUES ('{actor.Name}', '{actor.Surname}', '{actor.Patronym}', '{actor.Gender}', '{actor.Birthday}', '{actor.Country.ID}')";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Добавление завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -912,18 +1076,35 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "DELETE FROM Actor " +
-                                   $"WHERE Id_Actor = {actor.ID }";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "DELETE FROM Actor " +
+                                       $"WHERE Id_Actor = {actor.ID }";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Удаление завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -932,19 +1113,36 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "UPDATE Actor " +
-                                   $"SET Name = '{actor.Name}', Surname = '{actor.Surname}', Patronym = '{actor.Patronym}', Gender = '{actor.Gender}', Birthday = '{actor.Birthday}', Id_country = '{actor.Country.ID}' " +
-                                   $"WHERE Id_actor = {actor.ID}";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "UPDATE Actor " +
+                                       $"SET Name = '{actor.Name}', Surname = '{actor.Surname}', Patronym = '{actor.Patronym}', Gender = '{actor.Gender}', Birthday = '{actor.Birthday}', Id_country = '{actor.Country.ID}' " +
+                                       $"WHERE Id_actor = {actor.ID}";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Изменение завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -955,18 +1153,35 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "INSERT INTO Director " +
-                                   $"VALUES ('{director.Name}', '{director.Surname}', '{director.Patronym}', '{director.Gender}', '{director.Birthday}', '{director.Country.ID}')";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "INSERT INTO Director " +
+                                       $"VALUES ('{director.Name}', '{director.Surname}', '{director.Patronym}', '{director.Gender}', '{director.Birthday}', '{director.Country.ID}')";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Добавление завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -975,18 +1190,35 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "DELETE FROM Director " +
-                                   $"WHERE Id_director = {director.ID }";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "DELETE FROM Director " +
+                                       $"WHERE Id_director = {director.ID }";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Удаление завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -995,19 +1227,36 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "UPDATE Director " +
-                                   $"SET Name = '{director.Name}', Surname = '{director.Surname}', Patronym = '{director.Patronym}', Gender = '{director.Gender}', Birthday = '{director.Birthday}', Id_country = '{director.Country.ID}' " +
-                                   $"WHERE Id_director = {director.ID}";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "UPDATE Director " +
+                                       $"SET Name = '{director.Name}', Surname = '{director.Surname}', Patronym = '{director.Patronym}', Gender = '{director.Gender}', Birthday = '{director.Birthday}', Id_country = '{director.Country.ID}' " +
+                                       $"WHERE Id_director = {director.ID}";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Изменение завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -1018,18 +1267,35 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "DELETE FROM Genre " +
-                                   $"WHERE Id_genre = {genre.ID}";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "DELETE FROM Genre " +
+                                       $"WHERE Id_genre = {genre.ID}";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Удаление завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -1041,18 +1307,35 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "INSERT INTO Studio " +
-                                   $"VALUES ('{studio.Name}', '{studio.Country.ID}')";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "INSERT INTO Studio " +
+                                       $"VALUES ('{studio.Name}', '{studio.Country.ID}')";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Добавление завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -1061,18 +1344,35 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "DELETE FROM Studio " +
-                                   $"WHERE Id_studio = {studio.ID }";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "DELETE FROM Studio " +
+                                       $"WHERE Id_studio = {studio.ID }";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Удаление завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -1081,19 +1381,36 @@ namespace Movie_Collection.DataAccess
         {
             return Task.Run(() =>
             {
-                using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                try
                 {
-                    string query = "UPDATE Studio " +
-                                   $"SET Name = '{studio.Name}', Id_country = '{studio.Country.ID}'" +
-                                   $"WHERE Id_studio = {studio.ID}";
+                    using (SqlConnection sqlConnection = new SqlConnection(databaseConnectionString))
+                    {
+                        string query = "UPDATE Studio " +
+                                       $"SET Name = '{studio.Name}', Id_country = '{studio.Country.ID}'" +
+                                       $"WHERE Id_studio = {studio.ID}";
 
-                    SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                        SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
 
-                    sqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        sqlConnection.Open();
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    sqlDataReader.Close();
-                    sqlConnection.Close();
+                        sqlDataReader.Close();
+                        sqlConnection.Close();
+                    }
+
+                    Success("Изменение завершено");
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+                }
+                catch (NullReferenceException ex)
+                {
+                    NullArgumentsDataBase(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
                 }
             });
         }
@@ -1189,75 +1506,203 @@ namespace Movie_Collection.DataAccess
         }
         #endregion
 
+        public event EventHandler<ErrorEventArgs> ErrorMessage;
+
         #region Получение сущностей
         public Task<List<Movie>> GetMovies()
         {
             return Task.Run<List<Movie>>(async () =>
             {
-                movies.Clear();
+                try
+                {
+                    movies.Clear();
 
-                await LoadMovies();
-                return new List<Movie>(movies);
+                    await LoadMovies();
+
+                    Success("Загрузка завершена");
+
+                    return new List<Movie>(movies);
+                }
+                catch (SqlException ex) 
+                {
+                    NoConnectionToDataBase(ex.Message);
+
+                    return new List<Movie>(movies);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
+
+                    return new List<Movie>(movies);
+                }
             });
         }
         public Task<List<Actor>> GetActors()
         {
             return Task.Run<List<Actor>>(async() =>
             {
-                actors.Clear();
+                try
+                {
+                    actors.Clear();
 
-                await LoadActors();
-                return new List<Actor>(actors);
+                    await LoadActors();
+
+                    Success("Загрузка завершена");
+
+                    return new List<Actor>(actors);
+                }
+                catch(SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+
+                    return new List<Actor>(actors);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
+
+                    return new List<Actor>(actors);
+                }
             });
         }
         public Task<List<Director>> GetDirectors()
         {
             return Task.Run<List<Director>>(async () =>
             {
-                directors.Clear();
+                try
+                {
+                    directors.Clear();
 
-                await LoadDirectors();
-                return new List<Director>(directors);
+                    await LoadDirectors();
+
+                    Success("Загрузка завершена");
+
+                    return new List<Director>(directors);
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+
+                    return new List<Director>(directors);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
+
+                    return new List<Director>(directors);
+                }
             });
         }
         public Task<List<Studio>> GetStudios()
         {
             return Task.Run<List<Studio>>(async () =>
             {
-                studios.Clear();
+                try
+                {
+                    studios.Clear();
 
-                await LoadStudios();
-                return new List<Studio>(studios);
+                    await LoadStudios();
+
+                    Success("Загрузка завершена");
+
+                    return new List<Studio>(studios);
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+
+                    return new List<Studio>(studios);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
+
+                    return new List<Studio>(studios);
+                }
             });
         }
         public Task<List<Genre>> GetGenres()
         {
             return Task.Run<List<Genre>>(async () =>
             {
-                genres.Clear();
+                try
+                {
+                    genres.Clear();
 
-                await LoadGenres();
-                return new List<Genre>(genres);
+                    await LoadGenres();
+
+                    Success("Загрузка завершена");
+
+                    return new List<Genre>(genres);
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+
+                    return new List<Genre>(genres);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
+
+                    return new List<Genre>(genres);
+                }
             });
         }
         public Task<List<Storage>> GetStorages()
         {
             return Task.Run<List<Storage>>(async () =>
             {
-                storages.Clear();
+                try
+                {
+                    storages.Clear();
 
-                await LoadStorages();
-                return new List<Storage>(storages);
+                    await LoadStorages();
+
+                    Success("Загрузка завершена");
+
+                    return new List<Storage>(storages);
+                }
+                catch(SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+
+                    return new List<Storage>(storages);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
+
+                    return new List<Storage>(storages);
+                }
             });
         }
         public Task<List<Country>> GetCountries()
         {
             return Task.Run<List<Country>>(async () =>
             {
-                countries.Clear();
+                try
+                {
+                    countries.Clear();
 
-                await LoadCountries();
-                return new List<Country>(countries);
+                    await LoadCountries();
+
+                    Success("Загрузка завершена");
+
+                    return new List<Country>(countries);
+                }
+                catch (SqlException ex)
+                {
+                    NoConnectionToDataBase(ex.Message);
+
+                    return new List<Country>(countries);
+                }
+                catch (Exception ex)
+                {
+                    UnexpectedException(ex.Message);
+
+                    return new List<Country>(countries);
+                }
             });
         }
 
@@ -1286,5 +1731,22 @@ namespace Movie_Collection.DataAccess
             LoadRelationMoviesAndGenres();
         }
         #endregion
+
+        void NoConnectionToDataBase(string exceptionMessage)
+        {
+            ErrorMessage(this, new ErrorEventArgs("Отcутствует подключение к базе данных или ошибка при работе с ней: \n" + exceptionMessage));
+        }
+        void NullArgumentsDataBase(string exceptionMessage)
+        {
+            ErrorMessage(this, new ErrorEventArgs("Ошибка при передаче параметров в базу данных: \n" + exceptionMessage));
+        }
+        void UnexpectedException(string exceptionMessage)
+        {
+            ErrorMessage(this, new ErrorEventArgs("Неизвестная ошибка: \n" + exceptionMessage));
+        }
+        void Success(string Message)
+        {
+            ErrorMessage(this, new ErrorEventArgs(Message));
+        }
     }
 }

@@ -4,13 +4,16 @@ using Movie_Collection.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
-    class MovieViewModel : WorkspaceViewModel
+    public class MovieViewModel : WorkspaceViewModel, IDataErrorInfo
     {
         readonly Movie movie;
         readonly MainWindowViewModel mainWindowViewModel;
@@ -39,15 +42,24 @@ namespace Movie_Collection.ViewModel
                 base.OnPropertyChanged("Description");
             }
         }
-        public TimeSpan Duration
+        public string Duration
         {
             get
             {
-                return movie.Duration;
+                return movie.Duration.ToString();
             }
             set
             {
-                movie.Duration = value;
+                TimeSpan timeSpan;
+                if (TimeSpan.TryParse(value, out timeSpan))
+                {
+                    movie.Duration = timeSpan;
+                }
+                else
+                {
+                    movie.Duration = null;
+                }
+
                 base.OnPropertyChanged("Duration");
             }
         }
@@ -63,15 +75,23 @@ namespace Movie_Collection.ViewModel
                 base.OnPropertyChanged("CountOfSeries");
             }
         }
-        public DateTime Release
+        public string Release
         {
             get
             {
-                return movie.Release;
+                return movie.Release.ToString();
             }
             set
             {
-                movie.Release = value;
+                DateTime dateTime;
+                if (DateTime.TryParse(value, out dateTime))
+                {
+                    movie.Release = dateTime;
+                }
+                else
+                {
+                    movie.Release = null;
+                }
                 base.OnPropertyChanged("Release");
             }
         }
@@ -82,6 +102,7 @@ namespace Movie_Collection.ViewModel
             movie.Storage = storage;
         }
 
+        #region Команды редактирования фильма и удаления сущностей двойным кликом
         RelayCommand editCommand;
         RelayCommand doubleClickDeleteStudiosCommand;
         RelayCommand doubleClickDeleteActorsCommand;
@@ -186,6 +207,28 @@ namespace Movie_Collection.ViewModel
                 return doubleClickDeleteGenresCommand;
             }
         }
+        #endregion
+
+        RelayCommand setNullCommand;
+        public ICommand SetNullCommand
+        {
+            get
+            {
+                if (setNullCommand == null)
+                {
+                    setNullCommand = new RelayCommand(param =>
+                    {
+                        try
+                        {
+                            
+                        }
+                        catch { }
+                    });
+                }
+                return setNullCommand;
+            }
+        }
+
         StudioViewModel selectedStudio;
         ActorViewModel selectedActor;
         DirectorViewModel selectedDirector;
@@ -227,12 +270,38 @@ namespace Movie_Collection.ViewModel
                 base.OnPropertyChanged("SelectedGenre");
             }
         }
+
         public ObservableCollection<ActorViewModel> Actors { get; private set; }
         public ObservableCollection<DirectorViewModel> Directors { get; private set; }
         public ObservableCollection<GenreViewModel> Genres { get; private set; }
         public ObservableCollection<StudioViewModel> Studios { get; private set; }
         public StorageViewModel Storage { get; set; }
-        
+
+
+        public Dictionary<string, string> ErrorCollection { get; private set; } = new Dictionary<string, string>();
+
+        public string Error
+        {
+            get => ((IDataErrorInfo)movie).Error;
+        }
+
+        public string this[string propertyName]
+        {
+            get
+            {
+               string error = ((IDataErrorInfo)movie)[propertyName];
+
+                if (ErrorCollection.ContainsKey(propertyName))
+                    ErrorCollection[propertyName] = error;
+                else if (error != null)
+                    ErrorCollection.Add(propertyName, error);
+
+                OnPropertyChanged("ErrorCollection");
+
+                return error;
+            }
+        }
+
         public MovieViewModel(Movie newMovie, MainWindowViewModel mainWindowViewModel = null)
         {
             this.mainWindowViewModel = mainWindowViewModel;
@@ -257,37 +326,60 @@ namespace Movie_Collection.ViewModel
         //в самом классе Movie надо обновть списки
         public async void AddMovie(DataBaseWork dataBase)
         {
-            if (movie.ID == 0)
+            try
+            {
+                if (movie.CheckPropertiesBeforeAdding())
+                {
+                    await StartAdding(dataBase);
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message, "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        private Task StartAdding(DataBaseWork dataBase)
+        {
+            return Task.Run(async () =>
             {
                 foreach (var actorViewModel in Actors)
                 {
-                    movie.Actors.Add(actorViewModel.Actor);
+                    if (movie.Actors.All(x => x.ID != actorViewModel.Actor.ID))
+                    {
+                        movie.Actors.Add(actorViewModel.Actor);
+                    }
                 }
                 foreach (var directorViewModel in Directors)
                 {
-                    movie.Directors.Add(directorViewModel.Director);
+                    if (movie.Directors.All(x => x.ID != directorViewModel.Director.ID))
+                    {
+                        movie.Directors.Add(directorViewModel.Director);
+                    }
                 }
-
                 foreach (var studioViewModel in Studios)
                 {
-                    movie.Studios.Add(studioViewModel.Studio);
+                    if (movie.Studios.All(x => x.ID != studioViewModel.Studio.ID))
+                    {
+                        movie.Studios.Add(studioViewModel.Studio);
+                    }
                 }
-
                 foreach (var genreViewModel in Genres)
                 {
-                    movie.Genres.Add(genreViewModel.Genre);
+                    if (movie.Genres.All(x => x.ID != genreViewModel.Genre.ID))
+                    {
+                        movie.Genres.Add(genreViewModel.Genre);
+                    }
                 }
 
-                await dataBase.AddMovie(movie);
-            }
-            else
-            {
-                await dataBase.UpdateMovie(movie);
-            }
-        }
-        public async void UpdateMovie(DataBaseWork dataBase)
-        {
-            await dataBase.UpdateMovie(movie);
+                if (movie.ID == 0)
+                {
+                    await dataBase.AddMovie(movie);
+                }
+                else
+                {
+                    await dataBase.UpdateMovie(movie);
+                }
+            });
         }
         public async void DeleteMovie(DataBaseWork dataBase)
         {
