@@ -207,7 +207,7 @@ namespace Movie_Collection.ViewModel
                 {
                     generateMoviesCommand = new RelayCommand(param =>
                     {
-                        generatorMovies.CreateNewMovies(dataBaseAddMovie, 1);
+                        generatorMovies.CreateNewMovies(dataBaseAddMovie, 10);
                     });
                 }
                 return generateMoviesCommand;
@@ -221,7 +221,7 @@ namespace Movie_Collection.ViewModel
             base.DisplayName = Strings.AddMovieViewModel_DisplayName;
 
             dataBaseAddMovie = dataBase;
-            FullData();
+            FullMainEntities();
 
             if (movieViewModel != null)
             {
@@ -234,7 +234,7 @@ namespace Movie_Collection.ViewModel
              selectedStorage = AllStorages.First(x => x.ID == movie.Storage.ID);
         }
 
-        private void FullData()
+        private void FullMainEntities()
         {
             var task1 = CreateNewActors();
             var task2 = CreateNewDirectors();

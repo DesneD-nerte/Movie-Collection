@@ -7,7 +7,7 @@ using System.Windows.Threading;
 
 namespace Movie_Collection.ViewModel
 {
-    public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
+    public abstract class ViewModelBase : INotifyPropertyChanged
     {
         protected ViewModelBase()
         {
@@ -60,16 +60,6 @@ namespace Movie_Collection.ViewModel
                 var e = new PropertyChangedEventArgs(propertyName);
                 handler(this, e);
             }
-        }
-
-        public void Dispose()
-        {
-            OnDispose();
-        }
-
-        protected virtual void OnDispose()
-        {
-            
         }
     }
 }

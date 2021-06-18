@@ -85,7 +85,7 @@ namespace Movie_Collection.Model
         }
         public Movie(int id, string name, string description, Storage storage, int numOfSeries, TimeSpan? duration, DateTime? release)
         {
-            CheckParameters(id, storage, numOfSeries, duration, release);
+            CheckParameters(id, name, storage, numOfSeries, duration, release);
 
             ID = id;
             Name = name;
@@ -100,21 +100,71 @@ namespace Movie_Collection.Model
             Studios = new List<Studio>();
         }
 
-        private void CheckParameters(int id, Storage storage, int numOfSeries, TimeSpan? duration, DateTime? release)
+        private void CheckParameters(int id, string name, Storage storage, int numOfSeries, TimeSpan? duration, DateTime? release)
         {
-            if (id < 0 || storage == null || numOfSeries < 1 || (duration.HasValue && duration.Value < TimeSpan.Zero) || (release.HasValue && release.Value < DateTime.MinValue))
+            if (id < 0 && String.IsNullOrEmpty(name) && storage == null && numOfSeries < 1 && (duration.HasValue && duration.Value < TimeSpan.Zero) && (release.HasValue && release.Value < DateTime.MinValue))
             {
                 throw new ArgumentException("Ошибка при передачи параметра");
             }
         }
 
-        public bool CheckPropertiesBeforeAdding()
+        public bool IsValid()
         {
-            if (ID < 0 || Storage == null || CountOfSeries < 1 || (Duration.HasValue && Duration.Value < TimeSpan.Zero) || (Release.HasValue && Release.Value < DateTime.MinValue))
+            if (IsValidID() && IsValidName() && IsValidStorage() && IsValidCountOfSeries() && IsValidDuration() && IsValidRelease())
             {
-                throw new ArgumentException("Ошибка при передачи параметра");
+                return true;
+                //throw new ArgumentException("Ошибка при передачи параметра");
             }
 
+            return false;
+        }
+
+        private bool IsValidID()
+        {
+            if(ID < 0)
+            {
+                return false;
+            }
+            return true;
+        }
+        private bool IsValidName()
+        {
+            if (String.IsNullOrEmpty(Name))
+            {
+                return false;
+            }
+            return true;
+        }
+        private bool IsValidStorage()
+        {
+            if (Storage == null)
+            {
+                return false;
+            }
+            return true;
+        }
+        private bool IsValidCountOfSeries()
+        {
+            if (CountOfSeries < 1)
+            {
+                return false;
+            }
+            return true;
+        }
+        private bool IsValidDuration()
+        {
+            if ((Duration.HasValue && Duration.Value < TimeSpan.Zero))
+            {
+                return false;
+            }
+            return true;
+        }
+        private bool IsValidRelease()
+        {
+            if ((Release.HasValue && Release.Value < DateTime.MinValue))
+            {
+                return false;
+            }
             return true;
         }
     }

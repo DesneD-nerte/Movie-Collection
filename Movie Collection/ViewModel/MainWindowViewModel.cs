@@ -52,7 +52,7 @@ namespace Movie_Collection.ViewModel
             dataBaseWork = new DataBaseWork(databaseConnectionString);
             dataBaseWork.ErrorMessage += ErrorDataBase;
         }
-        void ErrorDataBase(object sender, ErrorEventArgs e)
+        private void ErrorDataBase(object sender, ErrorEventArgs e)
         {
             ExceptionMessage = e.Message;
         }
