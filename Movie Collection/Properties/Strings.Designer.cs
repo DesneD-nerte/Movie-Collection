@@ -22,7 +22,7 @@ namespace Movie_Collection.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Movie_Collection.Properties {
         ///   Возвращает кэшированный экземпляр ResourceManager, использованный этим классом.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Movie_Collection.Properties.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace Movie_Collection.Properties {
         ///   обращений к ресурсу с помощью этого класса ресурса со строгой типизацией.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Добавить актера.
         /// </summary>
-        internal static string AddActorViewModel_DisplayName {
+        public static string AddActorViewModel_DisplayName {
             get {
                 return ResourceManager.GetString("AddActorViewModel_DisplayName", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Добавить режиссера.
         /// </summary>
-        internal static string AddDirectorViewModel_DisplayName {
+        public static string AddDirectorViewModel_DisplayName {
             get {
                 return ResourceManager.GetString("AddDirectorViewModel_DisplayName", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Добавить фильм.
         /// </summary>
-        internal static string AddMovieViewModel_DisplayName {
+        public static string AddMovieViewModel_DisplayName {
             get {
                 return ResourceManager.GetString("AddMovieViewModel_DisplayName", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Добавить студию.
         /// </summary>
-        internal static string AddStudioViewModel_DisplayName {
+        public static string AddStudioViewModel_DisplayName {
             get {
                 return ResourceManager.GetString("AddStudioViewModel_DisplayName", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Актеры.
         /// </summary>
-        internal static string AllActorsViewModel_DisplayName {
+        public static string AllActorsViewModel_DisplayName {
             get {
                 return ResourceManager.GetString("AllActorsViewModel_DisplayName", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Режиссеры.
         /// </summary>
-        internal static string AllDirectorsViewModel_DisplayName {
+        public static string AllDirectorsViewModel_DisplayName {
             get {
                 return ResourceManager.GetString("AllDirectorsViewModel_DisplayName", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Жанры.
         /// </summary>
-        internal static string AllGenresViewModel_DisplayName {
+        public static string AllGenresViewModel_DisplayName {
             get {
                 return ResourceManager.GetString("AllGenresViewModel_DisplayName", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Фильмы.
         /// </summary>
-        internal static string AllMoviesViewModel_DisplayName {
+        public static string AllMoviesViewModel_DisplayName {
             get {
                 return ResourceManager.GetString("AllMoviesViewModel_DisplayName", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Студии.
         /// </summary>
-        internal static string AllStudiosViewModel_DisplayName {
+        public static string AllStudiosViewModel_DisplayName {
             get {
                 return ResourceManager.GetString("AllStudiosViewModel_DisplayName", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Добавить актера.
         /// </summary>
-        internal static string MainWindowViewModel_Command_AddActor {
+        public static string MainWindowViewModel_Command_AddActor {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_AddActor", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Добавить режиссера.
         /// </summary>
-        internal static string MainWindowViewModel_Command_AddDirector {
+        public static string MainWindowViewModel_Command_AddDirector {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_AddDirector", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Добавить фильм.
         /// </summary>
-        internal static string MainWindowViewModel_Command_AddMovie {
+        public static string MainWindowViewModel_Command_AddMovie {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_AddMovie", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Добавить студию.
         /// </summary>
-        internal static string MainWindowViewModel_Command_AddStudio {
+        public static string MainWindowViewModel_Command_AddStudio {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_AddStudio", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Все актеры.
         /// </summary>
-        internal static string MainWindowViewModel_Command_ViewAllActors {
+        public static string MainWindowViewModel_Command_ViewAllActors {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_ViewAllActors", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Все режиссеры.
         /// </summary>
-        internal static string MainWindowViewModel_Command_ViewAllDirectors {
+        public static string MainWindowViewModel_Command_ViewAllDirectors {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_ViewAllDirectors", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Все жанры.
         /// </summary>
-        internal static string MainWindowViewModel_Command_ViewAllGenres {
+        public static string MainWindowViewModel_Command_ViewAllGenres {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_ViewAllGenres", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Все фильмы.
         /// </summary>
-        internal static string MainWindowViewModel_Command_ViewAllMovies {
+        public static string MainWindowViewModel_Command_ViewAllMovies {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_ViewAllMovies", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Все накопители.
         /// </summary>
-        internal static string MainWindowViewModel_Command_ViewAllStorages {
+        public static string MainWindowViewModel_Command_ViewAllStorages {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_ViewAllStorages", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace Movie_Collection.Properties {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Все студии.
         /// </summary>
-        internal static string MainWindowViewModel_Command_ViewAllStudios {
+        public static string MainWindowViewModel_Command_ViewAllStudios {
             get {
                 return ResourceManager.GetString("MainWindowViewModel_Command_ViewAllStudios", resourceCulture);
             }

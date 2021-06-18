@@ -326,17 +326,21 @@ namespace Movie_Collection.ViewModel
         //в самом классе Movie надо обновть списки
         public async void AddMovie(DataBaseWork dataBase)
         {
-            try
-            {
-                if (movie.CheckPropertiesBeforeAdding())
+            //try
+            //{
+                if (movie.IsValid())
                 {
                     await StartAdding(dataBase);
                 }
-            }
-            catch (ArgumentException ex)
-            {
-                MessageBox.Show(ex.Message, "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+                else
+                {
+                    MessageBox.Show("Ошибка при передачи параметра", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    MessageBox.Show(ex.Message, "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            //}
         }
         private Task StartAdding(DataBaseWork dataBase)
         {

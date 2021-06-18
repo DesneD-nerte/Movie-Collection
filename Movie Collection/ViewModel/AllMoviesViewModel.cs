@@ -16,7 +16,7 @@ using System.Windows.Input;
 
 namespace Movie_Collection.ViewModel
 {
-    class AllMoviesViewModel : WorkspaceViewModel
+    public class AllMoviesViewModel : WorkspaceViewModel
     {
         public ObservableCollection<MovieViewModel> Movies { get; private set; }//Перечисляются все фильмы для главной таблицы
 
@@ -102,10 +102,6 @@ namespace Movie_Collection.ViewModel
             {
                 searchMovie = value;
             }
-        }
-        protected override void OnDispose()
-        {
-
         }
     }
 }

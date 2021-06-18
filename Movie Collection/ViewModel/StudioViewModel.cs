@@ -54,7 +54,7 @@ namespace Movie_Collection.ViewModel
         }
 
 
-        internal void UpdateCountry(Country country)
+        public void UpdateCountry(Country country)
         {
             Country = new CountryViewModel(country);
             Studio.Country = country;

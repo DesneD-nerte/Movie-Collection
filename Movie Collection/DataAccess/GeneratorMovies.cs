@@ -20,7 +20,7 @@ namespace Movie_Collection.DataAccess
         {
             SetExistingEntities(dataBaseWork);
 
-            Faker<Movie> generatorMovie = getGeneratorMovie();
+            Faker<Movie> generatorMovie = GetGeneratorMovie();
 
             Movies = new List<Movie>(generatorMovie.Generate(countMovies));
 
@@ -30,7 +30,7 @@ namespace Movie_Collection.DataAccess
             }
         }
 
-        private Faker<Movie> getGeneratorMovie()
+        private Faker<Movie> GetGeneratorMovie()
         {
             return new Faker<Movie>("ru")
                 .RuleFor(x => x.Name, f => f.Hacker.Noun())
